@@ -123,7 +123,7 @@ export default function Service() {
                     description:
                         "Our comprehensive car repairs and servicing keep your vehicle running safely and efficiently at all times.",
                     icon: <Wrench className="w-6 h-6 text-[#317F21]" />,
-                    image: "repair.jpeg",
+                    image: "/repair.jpeg",
                     link: "/car-repair",
                 },
                 {
@@ -150,7 +150,7 @@ export default function Service() {
                     description:
                         "Trusted MOT testing and preparation to meet all legal safety and emissions standards.",
                     icon: <ClipboardCheck className="w-6 h-6 text-[#317F21]" />,
-                    image: "MOT.jpeg",
+                    image: "/MOT.jpeg",
                     link: "/mot",
                 },
             ],
@@ -183,7 +183,7 @@ export default function Service() {
                         "Professional installation and repair of all vehicle lighting and electrical wiring systems.",
                     icon: <CircuitBoard className="w-6 h-6 text-[#317F21]" />,
                     image: "/ECU.jpg",
-                    link: "/ECURepair&Services",
+                    link: "/ecu-repair-services",
                 },
                 {
                     id: 12,
@@ -281,7 +281,7 @@ export default function Service() {
                         "We professionally install handsfree car kits to help you stay connected safely on the road.",
                     icon: <PhoneCall className="w-6 h-6 text-[#317F21]" />,
                     image: "Hands.jpeg",
-                    link: "/handfree",
+                    link: "/handsfree",
                 },
                 {
                     id: 9,

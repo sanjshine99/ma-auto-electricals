@@ -89,7 +89,7 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-12 bg-white  transition-colors duration-500 relative">
+    <section id="testimonial" className="py-12 bg-white  transition-colors duration-500 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">

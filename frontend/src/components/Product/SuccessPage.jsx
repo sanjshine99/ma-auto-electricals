@@ -36,10 +36,10 @@ export default function SuccessPage() {
         if (data.success) {
           setOrder(data.order);
 
-          // ✅ CLEAR CART AFTER SUCCESS
+          // CLEAR CART AFTER SUCCESS
           localStorage.removeItem("cart");
 
-          // 🔔 Trigger Navbar update
+          // Trigger Navbar update
           window.dispatchEvent(new Event("storage"));
 
           toast.success("Order confirmed!");

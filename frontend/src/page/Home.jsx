@@ -1,6 +1,4 @@
 import React from 'react'
-import About from "../components/About";
-import ImageSlider from "../components/ImageSlider"
 import HeroSection from '../components/Hero';
 import Service from '../components/Service';
 import ProductSellers from '../components/ProductSection';
@@ -11,7 +9,6 @@ const Home = () => {
     return (
         <div>
             <HeroSection />
-            {/* <About /> */}
             <Service />
             <ProductSellers />
             <ContactSection />

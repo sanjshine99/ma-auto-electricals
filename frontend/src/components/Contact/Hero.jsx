@@ -1,8 +1,4 @@
-"use client";
-
-import React, { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import React from "react";
 
 const palette = {
   primary: "#317F21",     // green accent
@@ -13,13 +9,6 @@ const palette = {
 };
 
 export default function ContactHero() {
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: false,
-      easing: "ease-out-cubic",
-    });
-  }, []);
 
   return (
     <section

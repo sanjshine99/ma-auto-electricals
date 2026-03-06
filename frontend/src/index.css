@@ -15,3 +15,11 @@ html, body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* src/index.css */
+.gradient-blue {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  -webkit-text-fill-color: transparent;
+  transform: translateZ(0);
+  will-change: transform;
+}

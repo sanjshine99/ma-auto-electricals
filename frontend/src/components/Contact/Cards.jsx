@@ -1,9 +1,5 @@
-"use client";
-
-import React, { useEffect } from "react";
-import { FaPhone, FaMapMarkerAlt, FaClock } from "react-icons/fa";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import React from "react";
+import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
 
 function InfoCard({ icon, title, subtitle, body, cta, delay }) {
@@ -59,13 +55,6 @@ function InfoCard({ icon, title, subtitle, body, cta, delay }) {
 }
 
 export default function ContactCards() {
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: false,
-      easing: "ease-out-cubic",
-    });
-  }, []);
 
   return (
     <section className="py-12 md:py-14 lg:py-16 bg-white ">

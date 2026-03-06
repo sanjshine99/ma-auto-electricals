@@ -33,12 +33,12 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-10 sm:mb-20">
-            <a
-              href="#contact"
+            <Link
+              to="/contact"
               className="px-6 py-3 bg-[#317F21] text-black font-semibold rounded-lg hover:bg-lime-400 transition"
             >
               Contact us
-            </a>
+            </Link>
 
             <Link
               to="/product"

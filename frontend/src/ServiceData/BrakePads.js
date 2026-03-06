@@ -1,12 +1,7 @@
 import {
     FaPhoneAlt,
-    FaPhone,
-    FaCar,
-    FaBluetooth,
-    FaMobileAlt,
     FaTools,
     FaVolumeUp,
-    FaCogs,
 } from "react-icons/fa";
 
 export const motHeroData = {
@@ -136,8 +131,8 @@ export const emergencyCtaData = {
   buttons: {
     call: {
       text: "Call +44 7889 133123‬",
-      href: "tel:01162515961",
-      icon: FaPhone,
+      href: "tel:+447889133123",
+      icon: FaPhoneAlt,
     },
     book: {
       text: "Book Service",

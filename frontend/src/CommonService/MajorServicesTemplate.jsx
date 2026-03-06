@@ -1,8 +1,8 @@
-"use client";
 import React from 'react';
+import { HiArrowRight } from 'react-icons/hi';
 
 const MajorServicesTemplate = ({ data }) => {
-  const { service_name, intro_description, benefits, signs } = data;
+  const { service_name, benefits, signs } = data;
 
   return (
     <div className="min-h-screen bg-white">
@@ -55,9 +55,11 @@ const MajorServicesTemplate = ({ data }) => {
                 key={index}
                 className="flex items-start gap-4 p-6 bg-gray-50 border-l-4 border-[#317F21] rounded-md hover:bg-gray-100 transition-colors duration-300"
               >
-                <span className="text-[#317F21] text-2xl font-bold flex-shrink-0">
-                  →
-                </span>
+                {/* Icon instead of text arrow */}
+                <div className="flex-shrink-0 mt-1">
+                  <HiArrowRight className="text-[#317F21] text-2xl" />
+                </div>
+
                 <p className="text-gray-700 text-lg leading-relaxed">
                   {sign}
                 </p>

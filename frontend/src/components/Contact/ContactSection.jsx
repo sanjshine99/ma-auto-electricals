@@ -1,26 +1,22 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   FaCommentDots,
   FaUser,
-  FaPhone,
+  FaPhoneAlt,
   FaEnvelope,
   FaCarSide,
   FaClock,
   FaMapMarkerAlt,
   FaDirections,
 } from "react-icons/fa";
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 // EmailJS credentials
-const SERVICE_ID = "service_2u9sb2c";
-const TEMPLATE_ID = "template_db0pgim";
-const USER_ID = "ddjdtu50sL-rnwvZW";
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const USER_ID = import.meta.env.VITE_EMAILJS_USER_ID;
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -36,14 +32,6 @@ export default function ContactSection() {
     phone: "",
     email: "",
   });
-
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: false,
-      easing: "ease-out-cubic",
-    });
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -121,7 +109,7 @@ export default function ContactSection() {
                   id="phone"
                   label="Phone Number *"
                   placeholder="Your phone number"
-                  icon={<FaPhone className="h-4 w-4" />}
+                  icon={<FaPhoneAlt className="h-4 w-4" />}
                   value={formData.phone}
                   onChange={handleChange}
                   error={formErrors.phone}
@@ -209,13 +197,13 @@ export default function ContactSection() {
               title="Opening Hours"
               icon={<FaClock className="h-5 w-5" />}
             >
-              <HoursRow day="Monday" time="8:00 AM – 5:30 PM" />
-              <HoursRow day="Tuesday" time="8:00 AM – 5:30 PM" />
-              <HoursRow day="Wednesday" time="8:00 AM – 5:30 PM" />
-              <HoursRow day="Thursday" time="8:00 AM – 5:30 PM" />
-              <HoursRow day="Friday" time="8:00 AM – 5:30 PM" />
-              <HoursRow day="Saturday" time="8:00 AM – 4:00 PM" />
-              <HoursRow day="Sunday" time="Closed" muted />
+              <HoursRow day="Monday" time="9:00 AM – 6:00 PM" />
+              <HoursRow day="Tuesday" time="9:00 AM – 6:00 PM" />
+              <HoursRow day="Wednesday" time="9:00 AM – 6:00 PM" />
+              <HoursRow day="Thursday" time="9:00 AM – 6:00 PM" />
+              <HoursRow day="Friday" time="9:00 AM – 6:00 PM" />
+              <HoursRow day="Saturday" time="9:00 AM – 6:00 PM" />
+              <HoursRow day="Sunday" time="9:00 AM – 6:00 PM" />
             </SideCard>
 
             <SideCard data-aos="fade-left" title="Find Us" icon={<FaMapMarkerAlt className="h-5 w-5" />}>
@@ -239,7 +227,6 @@ United Kingdom
                 </button>
               </a>
             </SideCard>
-
            
           </div>
         </div>

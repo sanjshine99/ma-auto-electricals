@@ -52,7 +52,7 @@ export default function Navbar() {
     {
       category: "Mechanical & Servicing",
       items: [
-        { title: "Mechanical Repairs (All)", link: "/Mechanical" },
+        { title: "Mechanical Repairs (All)", link: "/mechanical" },
         { title: "Car Repairs & Servicing", link: "/car-repair" },
         { title: "Brake Pads", link: "/BrakePads" },
         { title: "MOT", link: "/mot" },
@@ -63,7 +63,7 @@ export default function Navbar() {
       items: [
         { title: "Vehicle Diagnostics", link: "/diagnostics" },
         { title: "All Car Electrics", link: "/Car-Electrics" },
-        { title: "ECU Repairs & Services", link: "/ECURepair&Services" },
+        { title: "ECU Repairs & Services", link: "/ecu-repair-services" },
         { title: "Window Regulators", link: "/WindowRegulators" },
         { title: "Wiper Motors", link: "/WiperMotors" },
         { title: "Central Door Motors", link: "/central-door-motors" },
@@ -87,7 +87,7 @@ export default function Navbar() {
       category: "Accessories & Installations",
       items: [
         { title: "Car Stereos", link: "/car-stereos" },
-        { title: "Handsfree Car Kits", link: "/handfree" },
+        { title: "Handsfree Car Kits", link: "/handsfree" },
         { title: "Parking Sensors / Cameras", link: "/parking" },
         { title: "Installations & Fitting", link: "/installation" },
       ],
@@ -160,7 +160,7 @@ export default function Navbar() {
 
             <HashLink to="/car" className="text-gray-300 hover:text-white">Car</HashLink>
             <HashLink to="/product" className="text-gray-300 hover:text-white">Product</HashLink>
-            <HashLink to="/#about" className="text-gray-300 hover:text-white">About</HashLink>
+            <HashLink to="/#testimonial" className="text-gray-300 hover:text-white">Testimonial</HashLink>
             <HashLink to="/contact" className="text-gray-300 hover:text-white">Contact</HashLink>
           </nav>
 

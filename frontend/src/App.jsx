@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import TermsConditions from "./components/Term";
@@ -35,10 +35,27 @@ import WindowRegulatorsPage from "./page/WindowRegulators";
 import BrakePadsPage from "./page/BrakePads";
 import MechanicalPage from "./page/Mechanical";
 import CarPage from "./page/CarPage"
+import ScrollToHash from "./components/ScrollToHash";
+import { FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
+
+import AOS from "aos";
+import "aos/dist/aos.css"; // Import AOS styles
+
 function App() {
+
+  useEffect(() => {
+    // Initialize AOS
+    AOS.init({
+      duration: 1000, // Animation duration in ms
+      once: true,     // Whether animation should happen only once
+      offset: 100,    // Offset (in px) from the original trigger point
+    });
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />
+      <ScrollToHash />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -53,7 +70,7 @@ function App() {
         <Route path="/mot" element={<MotPage />} />
         <Route path="/parking" element={<ParkingPage />} />
         <Route path="/installation" element={<InstallationPage />} />
-        <Route path="/handfree" element={<HandfreePage />} />
+        <Route path="/handsfree" element={<HandfreePage />} />
         <Route path="/diagnostics" element={<DiagnosticsPage />} />
         <Route path="/car-stereos" element={<CarStereosPage />} />
         <Route path="/car-security" element={<CarSecurityPage />} />
@@ -61,19 +78,38 @@ function App() {
         <Route path="/vehicle-tracking" element={<VehicleTrackingPage />} />
         <Route path="/AdBlue" element={<AdBluePage />} />
         <Route path="/EGR" element={<EGRPage />} />
-        <Route path="/ECURepair&Services" element={<ECUPage />} />
+        <Route path="/ecu-repair-services" element={<ECUPage />} />
         <Route path="/Car-Electrics" element={<CarElectricsPage />} />
         <Route path="/central-door-motors" element={<CentralDoorMotorsPage />} />
         <Route path="/WiperMotors" element={<WiperMotorsPage />} />
         <Route path="/WindowRegulators" element={<WindowRegulatorsPage />} />
         <Route path="/BrakePads" element={<BrakePadsPage />} />
-        <Route path="/Mechanical" element={<MechanicalPage />} />
+        <Route path="/mechanical" element={<MechanicalPage />} />
         <Route path="/ford" element={<Ford />} />
         <Route path="/vauxhall" element={<Vauxhall />} />
         <Route path="/car" element={<CarPage />} />
       </Routes>
       <Footer />
       <GDPRBanner />
+      {/* WhatsApp Floating Button */}
+      <a
+        href="https://wa.me/447889133123"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-28 right-7 md:bottom-33 md:right-6 z-40 bg-green-500 hover:bg-green-600 text-white p-2 md:p-3 rounded-full shadow-lg transition-transform hover:scale-110"
+        aria-label="Chat on WhatsApp"
+      >
+        <FaWhatsapp size={20} />
+      </a>
+      {/* Phone Floating Button */}
+      <a
+        href="tel:+447889133123"
+        rel="noopener noreferrer"
+        className="fixed bottom-18 right-7 md:bottom-20 md:right-6 z-40  bg-[#317F21] hover:bg-[#317F21]/80 text-white p-2 md:p-3 rounded-full shadow-lg transition-transform hover:scale-110"
+        aria-label="Call Us"
+      >
+        <FaPhoneAlt size={18} className="hover:text-black" />
+      </a>
     </Router>
   );
 }

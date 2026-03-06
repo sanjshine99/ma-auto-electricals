@@ -1,6 +1,5 @@
 import {
   FaPhoneAlt,
-  FaPhone,
   FaCar,
   FaWrench,
   FaThermometerHalf,
@@ -29,7 +28,7 @@ export const motHeroData = {
   buttons: {
     primary: {
       text: "Call: +44 7889 133123‬",
-      href: "tel:01162515961",
+      href: "tel:+447889133123",
       icon: FaPhoneAlt,
       bg: "#317F21",
       color: "#FFFFFF",
@@ -186,8 +185,8 @@ export const emergencyCtaData = {
   buttons: {
     call: {
       text: "Call +44 7889 133123‬",
-      href: "tel:01162515961",
-      icon: FaPhone,
+      href: "tel:+447889133123",
+      icon: FaPhoneAlt,
     },
     book: {
       text: "Book Service",

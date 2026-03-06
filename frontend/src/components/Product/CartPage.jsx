@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, X } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -155,9 +155,8 @@ export default function CartPage() {
                     <span className="px-3 py-1 border rounded">{item.quantity}</span>
                     <button
                       onClick={() => handleIncrease(item._id)}
-                      className={`bg-gray-200 p-1 rounded hover:bg-gray-300 transition ${
-                        item.quantity >= item.count ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                      className={`bg-gray-200 p-1 rounded hover:bg-gray-300 transition ${item.quantity >= item.count ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                       disabled={item.quantity >= item.count || item.count === 0}
                     >
                       <Plus size={16} />
@@ -199,10 +198,11 @@ export default function CartPage() {
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-2xl p-8 w-full max-w-lg relative shadow-2xl">
                   <button
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-lg font-bold"
+                    className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-800 transition-colors"
                     onClick={() => setShowCheckout(false)}
+                    aria-label="Close"
                   >
-                    ✕
+                    <X className="w-6 h-6" />
                   </button>
                   <h2 className="text-2xl font-bold mb-4">Enter Your Details</h2>
                   <div className="flex flex-col gap-4">

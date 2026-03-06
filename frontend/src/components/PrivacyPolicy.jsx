@@ -44,7 +44,6 @@ const PrivacyPolicy = () => {
                     </p>
                     <ul className="list-disc ml-6 text-white">
                         <li>Respond to inquiries and provide quotes</li>
-                        <li>Deliver scaffolding services</li>
                         <li>Communicate with you about your project</li>
                         <li>Maintain business records and comply with legal requirements</li>
                     </ul>
@@ -113,7 +112,7 @@ const PrivacyPolicy = () => {
                         <p><strong>MA Auto electrics</strong></p>
                         <p>Email: <a href="mailto:maautoelectrics@gmail.com" className="text-[#317F21] hover:underline">maautoelectrics@gmail.com</a></p>
                         <p>Phone: +44 7889 133123</p>
-                        <p>Address: 13 laburnum drive oswaldtwistele, accrington bb5 3aw,United Kingdom</p>
+                        <p>Address: 13 laburnum drive oswaldtwistele, accrington bb5 3aw, United Kingdom</p>
                         </div>
                         <p className="mt-2 text-white">
                         If you are not satisfied with our response, you have the right to lodge a complaint with the{' '}

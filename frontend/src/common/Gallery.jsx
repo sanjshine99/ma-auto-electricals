@@ -1,26 +1,21 @@
-"use client";
 import React, { useState, useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { IoClose, IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 export default function GallerySection({ images }) {
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-  }, []);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   if (!images || images.length < 2) return null;
 
   const big = images.slice(0, 2);
   const thumbs = images.slice(2);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-
   useEffect(() => {
     if (!isOpen) return;
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % images.length);
     }, 3500);
+
     return () => clearInterval(timer);
   }, [isOpen, images.length]);
 
@@ -40,20 +35,20 @@ export default function GallerySection({ images }) {
   return (
     <section
       id="V-Gallery"
-      className="py-10 md:py-16 bg-white rounded-3xl overflow-hidden relative shadow-lg"
+      className="py-12 md:py-16 bg-white rounded-3xl overflow-hidden relative shadow-lg"
     >
-      <div className="max-w-6xl mx-auto px-6 md:px-10 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 relative z-10">
 
         {/* Heading */}
         <h2
           data-aos="fade-up"
-          className="text-center text-3xl md:text-4xl font-bold text-[#317F21] mb-8"
+          className="text-center text-2xl sm:text-3xl md:text-4xl font-bold text-[#317F21] mb-8"
         >
           Photo Gallery
         </h2>
 
         {/* Large Images */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           {big.map((url, index) => (
             <div
               key={index}
@@ -63,7 +58,8 @@ export default function GallerySection({ images }) {
             >
               <img
                 src={url}
-                className="w-full h-64 md:h-80 object-cover cursor-pointer border-4 border-[#317F21] hover:scale-105 transition-transform"
+                alt="gallery"
+                className="w-full h-56 sm:h-64 md:h-80 object-cover cursor-pointer border-4 border-[#317F21] hover:scale-105 transition-transform duration-300"
                 onClick={() => openPopup(index)}
               />
             </div>
@@ -71,7 +67,7 @@ export default function GallerySection({ images }) {
         </div>
 
         {/* Thumbnails */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-10 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-10 gap-3">
           {thumbs.map((url, index) => (
             <div
               key={index}
@@ -81,7 +77,8 @@ export default function GallerySection({ images }) {
             >
               <img
                 src={url}
-                className="w-full h-24 object-cover cursor-pointer border-2 border-[#317F21]/50 hover:scale-105 transition-transform"
+                alt="thumb"
+                className="w-full h-20 sm:h-24 object-cover cursor-pointer border-2 border-[#317F21]/50 hover:scale-105 transition-transform"
                 onClick={() => openPopup(index + 2)}
               />
             </div>
@@ -89,48 +86,47 @@ export default function GallerySection({ images }) {
         </div>
       </div>
 
-      {/* Watermark text behind gallery */}
+      {/* Watermark */}
       <div
         data-aos="fade-in"
-        className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[90px] md:text-[140px] font-extrabold text-[#317F21]/10 pointer-events-none select-none"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[70px] sm:text-[100px] md:text-[140px] font-extrabold text-[#317F21]/10 pointer-events-none select-none"
       >
         Gallery
       </div>
 
-      {/* Popup / Lightbox */}
+      {/* Lightbox */}
       {isOpen && (
-        <div
-          data-aos="fade-in"
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-        >
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+
+          {/* Close Button */}
           <button
-            data-aos="fade-down"
-            className="absolute top-6 right-6 text-[#317F21] text-3xl font-bold hover:opacity-90 transition"
+            className="absolute right-6 top-20 md:right-10 bg-white text-[#317F21] p-3 rounded-full shadow-lg hover:scale-110 transition"
             onClick={() => setIsOpen(false)}
           >
-            ✕
+            <IoClose size={26} />
           </button>
 
+          {/* Image */}
           <img
-            data-aos="zoom-in"
             src={images[activeIndex]}
-            className="max-w-[90%] max-h-[80%] rounded-2xl shadow-2xl border-4 border-[#317F21] transition-all duration-300"
+            alt="preview"
+            className="max-w-[95%] md:max-w-[80%] max-h-[75vh] rounded-2xl shadow-2xl border-4 border-[#317F21]"
           />
 
+          {/* Previous */}
           <button
-            data-aos="fade-right"
-            className="absolute left-6 top-1/2 -translate-y-1/2 text-[#317F21] text-5xl font-bold hover:opacity-80 transition"
+            className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 bg-white/90 text-[#317F21] p-3 md:p-4 rounded-full shadow-lg hover:scale-110 transition"
             onClick={prevImage}
           >
-            ‹
+            <IoChevronBack size={28} />
           </button>
 
+          {/* Next */}
           <button
-            data-aos="fade-left"
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-[#317F21] text-5xl font-bold hover:opacity-80 transition"
+            className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 bg-white/90 text-[#317F21] p-3 md:p-4 rounded-full shadow-lg hover:scale-110 transition"
             onClick={nextImage}
           >
-            ›
+            <IoChevronForward size={28} />
           </button>
         </div>
       )}

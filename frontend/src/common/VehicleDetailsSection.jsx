@@ -1,14 +1,7 @@
-"use client";
-import React, { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import React from "react";
 
 export default function VehicleDetailsSection({ data }) {
-  const { description, features, videoUrl } = data;
-
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-  }, []);
+  const { description, features } = data;
 
   return (
     <section className="bg-white text-black py-16 px-6 md:px-10 lg:px-0">

@@ -9,9 +9,8 @@ export default function ProductDetails() {
   const [inCart, setInCart] = useState(false);
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL; // Use .env for backend
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  // Fetch product details
   useEffect(() => {
     fetch(`${API_URL}/api/products/${id}`)
       .then((res) => res.json())
@@ -19,7 +18,6 @@ export default function ProductDetails() {
       .catch((err) => console.error(err));
   }, [id, API_URL]);
 
-  // Check if product is already in cart
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     setInCart(cart.some((item) => item._id === id));
@@ -37,7 +35,6 @@ export default function ProductDetails() {
 
   const handleCartToggle = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     if (inCart) {
       const updatedCart = cart.filter((item) => item._id !== product._id);
       localStorage.setItem("cart", JSON.stringify(updatedCart));
@@ -49,42 +46,40 @@ export default function ProductDetails() {
       setInCart(true);
       toast.success(`${product.name} added to cart`);
     }
-
     window.dispatchEvent(new Event("storage"));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 py-20">
-      <Toaster position="top-right" reverseOrder={false} />
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 py-20">
+      <Toaster position="top-right" />
       <div className="max-w-5xl mx-auto">
-        {/* Back Button */}
         <button
-          onClick={() => navigate("/product")}
-          className="flex items-center gap-2 text-[#317F21] font-semibold mb-6 hover:text-[#3ad81a] transition"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 pt-15 text-[#317F21] font-semibold mb-6 hover:text-[#3ad81a] transition"
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Products
+          Back
         </button>
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden grid md:grid-cols-2">
-          {/* Product Image */}
-          <div className="h-96 flex items-center justify-center bg-gray-100">
-            <img
-              src={`${API_URL}/images/${product.images[0]}`}
-              alt={product.name}
-              className="w-full h-full object-cover transform transition duration-500 hover:scale-105"
-            />
+          {/* Improved Image Area */}
+          <div className="bg-gray-100 flex items-center justify-center p-8">
+            <div className="relative w-full aspect-square max-h-[400px]">
+              <img
+                src={`${API_URL}/images/${product.images[0]}`}
+                alt={product.name}
+                className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
+              />
+            </div>
           </div>
 
-          {/* Product Details */}
           <div className="p-8 flex flex-col justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 mb-4">{product.name}</h1>
-              <p className="text-gray-600 mb-6">{product.description}</p>
-              <p className="text-4xl font-extrabold text-[#317F21]">£{product.price}</p>
+              <p className="text-gray-600 mb-6 leading-relaxed">{product.description}</p>
+              <p className="text-4xl font-extrabold text-[#317F21]">£{product.price.toFixed(2)}</p>
             </div>
 
-            {/* Add/Remove Cart Button */}
             <button
               onClick={handleCartToggle}
               className={`mt-8 flex items-center justify-center gap-3 text-white text-lg font-semibold py-4 rounded-xl transition ${

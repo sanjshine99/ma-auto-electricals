@@ -1,9 +1,5 @@
-"use client";
-
 import React, { useEffect } from "react";
-import { FaPhone } from "react-icons/fa";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { FaPhoneAlt } from "react-icons/fa";
 
 const palette = {
   primary: "#3F8D3A",          // green background
@@ -14,13 +10,6 @@ const palette = {
 };
 
 export default function EmergencyCTA() {
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: false,
-      easing: "ease-out-cubic",
-    });
-  }, []);
 
   return (
     <section
@@ -47,7 +36,7 @@ export default function EmergencyCTA() {
           data-aos="zoom-in"
         >
           {/* Call Now Button */}
-          <a href="tel:+44 7889 133123" className="inline-block">
+          <a href="tel:+447889133123" className="inline-block">
             <button
               className="
                 inline-flex items-center justify-center gap-2 h-10 rounded-md px-6 font-semibold shadow
@@ -58,27 +47,10 @@ export default function EmergencyCTA() {
                 color: palette.secondaryText,
               }}
             >
-              <FaPhone className="h-5 w-5" />
+              <FaPhoneAlt className="h-5 w-5" />
               Call +44 7889 133123
             </button>
           </a>
-
-          {/* Emergency Service Button */}
-          {/* <button
-            onClick={() => window.open('tel:+44 7889 133123', '_self')}
-            className="
-              inline-flex items-center justify-center gap-2 h-10 rounded-md px-6 font-semibold border
-              transition duration-300 hover:bg-white hover:text-[#317F21] 
-              active:bg-white active:text-[#317F21] focus:bg-white focus:text-[#317F21]
-            "
-            style={{
-              backgroundColor: "transparent",
-              color: palette.fgOnPrimary,
-              borderColor: palette.outline,
-            }}
-          >
-            Emergency Service
-          </button> */}
         </div>
       </div>
     </section>

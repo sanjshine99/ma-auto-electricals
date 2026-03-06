@@ -43,7 +43,7 @@ export default function GDPRConsent() {
           <p className="text-sm mb-4 text-gray-300 leading-relaxed text-center">
             We use cookies to improve your experience.{" "}
             <Link
-              to="/privacy-policy"
+              to="/privacy"
               className="underline font-semibold text-[#317F21] hover:text-[#4cb338] transition-colors"
             >
               See our Privacy Policy

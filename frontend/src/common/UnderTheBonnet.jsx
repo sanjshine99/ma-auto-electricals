@@ -1,7 +1,4 @@
-"use client";
-import React, { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import React from "react";
 
 export default function UnderTheBonnet({ items }) {
  
@@ -48,9 +45,6 @@ export default function UnderTheBonnet({ items }) {
             </div>
           ))}
         </div>
-
-        {/* View Full Technical Data Link */}
-        
       </div>
     </section>
   );
