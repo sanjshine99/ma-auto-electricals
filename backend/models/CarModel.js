@@ -7,7 +7,7 @@ const carSchema = new mongoose.Schema({
   variant:        { type: String, default: "" },      // e.g. "Zetec Black Edition"
   year:           { type: Number, required: true },
   price:          { type: Number, required: true },
-  monthlyPayment: { type: Number, default: 0 },
+ 
   registration:   { type: String, default: "Not specified" },
 
   // Specs

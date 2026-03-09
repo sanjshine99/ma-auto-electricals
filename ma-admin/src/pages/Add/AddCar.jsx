@@ -214,7 +214,7 @@ const AddCar = ({ url, onSuccess }) => {
             <Field label="Variant (e.g. Zetec)" name="variant"        value={formData.variant}        onChange={handleChange} placeholder="Zetec Black Edition" />
             <Field label="Year"                 name="year"           value={formData.year}           onChange={handleChange} placeholder="2015"     type="number" required error={errors.year} />
             <Field label="Price (£)"            name="price"          value={formData.price}          onChange={handleChange} placeholder="2695"     type="number" required error={errors.price} />
-            <Field label="Monthly Payment (£)"  name="monthlyPayment" value={formData.monthlyPayment} onChange={handleChange} placeholder="89"       type="number" error={errors.monthlyPayment} />
+           
             <Field label="Registration"         name="registration"   value={formData.registration}   onChange={handleChange} placeholder="AB15 XYZ" />
             <Field label="Mileage"              name="mileage"        value={formData.mileage}        onChange={handleChange} placeholder="57887"    type="number" error={errors.mileage} />
           </div>

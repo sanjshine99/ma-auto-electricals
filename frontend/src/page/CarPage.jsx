@@ -17,7 +17,6 @@ export default function CarPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // FIXED: Removed extra quote and used API_URL variable
     axios.get(`${API_URL}/api/cars`)
       .then(res => setCars(res.data))
       .catch(err => console.error("Failed to fetch cars:", err))
@@ -79,8 +78,8 @@ export default function CarPage() {
               
               <div className="h-1 w-14 bg-[#35542C] rounded-full mb-3" />
               
-              {/* PRICE: Applied your preferred Red color here */}
-              <p className="text-2xl font-bold text-[#B62025] dark:text-[#FF4B4B] mb-4">
+              {/* PRICE: Green color */}
+              <p className="text-2xl font-bold text-[#2F7D33] dark:text-[#2F7D33] mb-4">
                 £{car.price?.toLocaleString()}
               </p>
 
