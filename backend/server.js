@@ -1,4 +1,4 @@
-import "dotenv/config"; // 1. Ithe FIRST line-la irukanum
+import "dotenv/config"; // MUST be first line
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
@@ -14,18 +14,15 @@ import { Server } from "socket.io";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// 2. Allowed Origins - Console log panni check pannuvom
 const allowedOrigins = [
   process.env.ADMIN_URL,
-  process.env.CLIENT_URL
-].map(url => url?.replace(/\/$/, "")); // Trailing slash (/) iruntha remove pannum
+  process.env.CLIENT_URL,
+].map((url) => url?.replace(/\/$/, ""));
 
 console.log("Allowed Origins:", allowedOrigins);
-console.log("hi");
-// 3. CORS Options FIX
+
 const corsOptions = {
   origin: function (origin, callback) {
-    // Vite development-la 'origin' correct-ah irukanum
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -35,17 +32,26 @@ const corsOptions = {
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-// --- Middleware ---
-app.use(cors(corsOptions)); // <--- Inga 'corsOptions' pass panna maranthitteenga!
+// ⚠️ STRIPE WEBHOOK: Must be registered BEFORE express.json()
+// Stripe webhook needs raw body for signature verification.
+// If express.json() runs first, req.body becomes a parsed object
+// and stripe.webhooks.constructEvent() will throw an error.
+app.use(
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" })
+);
+
+// Normal middleware for all other routes
+app.use(cors(corsOptions));
 app.use(express.json());
 
 connectDB();
 app.use("/images", express.static("uploads"));
 
-// --- Routes ---
+// Routes
 app.use("/api/user", userRouter);
 app.use("/api/cars", carRouter);
 app.use("/api/products", productRouter);
@@ -55,14 +61,14 @@ app.use("/api/invoices", invoiceRouter);
 
 app.get("/", (req, res) => res.send("API is running"));
 
-// --- HTTP + Socket.io ---
+// HTTP + Socket.io
 const server = http.createServer(app);
-const io = new Server(server, { 
-  cors: { 
+const io = new Server(server, {
+  cors: {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true
-  } 
+    credentials: true,
+  },
 });
 
 app.set("io", io);
