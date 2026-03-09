@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
@@ -35,6 +34,7 @@ import WindowRegulatorsPage from "./page/WindowRegulators";
 import BrakePadsPage from "./page/BrakePads";
 import MechanicalPage from "./page/Mechanical";
 import CarPage from "./page/CarPage"
+import CarDetailPage from "../src/page/CarDetailPage"
 import ScrollToHash from "./components/ScrollToHash";
 import { FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 
@@ -88,6 +88,7 @@ function App() {
         <Route path="/ford" element={<Ford />} />
         <Route path="/vauxhall" element={<Vauxhall />} />
         <Route path="/car" element={<CarPage />} />
+        <Route path="/car/:slug" element={<CarDetailPage />} />
       </Routes>
       <Footer />
       <GDPRBanner />
