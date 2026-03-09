@@ -29,12 +29,14 @@ const loginUser = async (req, res) => {
 }
 
 const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET);
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '1h' 
+    });
 };
 
 // resgister user
 const registerUser = async (req, res) => {
-    const { name, email, password,registerKey } = req.body;
+    const { name, email, password, registerKey } = req.body;
     try {
 
         if (registerKey !== process.env.REGISTER_SECRET_KEY) {
