@@ -153,7 +153,7 @@ const CarList = ({ url }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="animate-pulse space-y-4">
@@ -171,7 +171,7 @@ const CarList = ({ url }) => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -185,7 +185,7 @@ const CarList = ({ url }) => {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl"
           >
             <Plus size={20} />
             Add Car
@@ -239,7 +239,7 @@ const CarList = ({ url }) => {
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-linear-to-r from-slate-800 to-slate-700 text-white">
+                <tr className="bg-gradient-to-r from-slate-800 to-slate-700 text-white">
                   <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
                     Image
                   </th>
@@ -530,7 +530,7 @@ const CarList = ({ url }) => {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-fadeIn">
             <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-scaleIn">
               {/* Header */}
-              <div className="bg-linear-to-r from-red-500 to-red-600 p-6 text-white">
+              <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="bg-white/20 p-2 rounded-lg">
@@ -598,7 +598,7 @@ const CarList = ({ url }) => {
                   <button
                     onClick={() => removeCar(carToDelete._id)}
                     disabled={deleteId === carToDelete._id}
-                    className="flex-1 px-4 py-3 bg-linear-to-r from-red-500 to-red-600 rounded-lg font-semibold text-white hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 rounded-lg font-semibold text-white hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {deleteId === carToDelete._id ? (
                       <>

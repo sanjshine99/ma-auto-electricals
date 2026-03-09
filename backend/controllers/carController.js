@@ -4,6 +4,7 @@ import path from "path";
 
 // CREATE car
 export const createCar = async (req, res) => {
+
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ success: false, message: "No images uploaded" });
@@ -11,13 +12,30 @@ export const createCar = async (req, res) => {
 
     const images = req.files.map((file) => file.filename);
 
+    // Parse features and bonnetData if sent as JSON strings
+    let features = [];
+    let bonnetData = [];
+    try { features = JSON.parse(req.body.features || "[]"); } catch {}
+    try { bonnetData = JSON.parse(req.body.bonnetData || "[]"); } catch {}
+
     const car = new carModel({
       name: req.body.name,
-      description: req.body.description,
-      price: req.body.price,
-      year: req.body.year,
       model: req.body.model,
-      images, // array of filenames
+      variant: req.body.variant || "",
+      year: Number(req.body.year),
+      price: Number(req.body.price),
+      monthlyPayment: Number(req.body.monthlyPayment || 0),
+      registration: req.body.registration || "Not specified",
+      mileage: Number(req.body.mileage || 0),
+      fuelType: req.body.fuelType || "Petrol",
+      transmission: req.body.transmission || "Manual",
+      bodyType: req.body.bodyType || "",
+      engine: req.body.engine || "",
+      colour: req.body.colour || "",
+      description: req.body.description,
+      features,
+      bonnetData,
+      images,
     });
 
     await car.save();
@@ -60,14 +78,31 @@ export const updateCar = async (req, res) => {
     const car = await carModel.findById(carId);
     if (!car) return res.status(404).json({ success: false, message: "Car not found" });
 
-    const { name, description, price, year, model, removeImages } = req.body;
+    const { name, model, variant, description, price, year, monthlyPayment, registration,
+            mileage, fuelType, transmission, bodyType, engine, colour, removeImages } = req.body;
 
-    // Update fields if provided
     if (name) car.name = name;
+    if (model) car.model = model;
+    if (variant !== undefined) car.variant = variant;
     if (description) car.description = description;
     if (price) car.price = Number(price);
     if (year) car.year = Number(year);
-    if (model) car.model = model;
+    if (monthlyPayment !== undefined) car.monthlyPayment = Number(monthlyPayment);
+    if (registration) car.registration = registration;
+    if (mileage !== undefined) car.mileage = Number(mileage);
+    if (fuelType) car.fuelType = fuelType;
+    if (transmission) car.transmission = transmission;
+    if (bodyType) car.bodyType = bodyType;
+    if (engine) car.engine = engine;
+    if (colour) car.colour = colour;
+
+    // Parse features and bonnetData
+    if (req.body.features) {
+      try { car.features = JSON.parse(req.body.features); } catch {}
+    }
+    if (req.body.bonnetData) {
+      try { car.bonnetData = JSON.parse(req.body.bonnetData); } catch {}
+    }
 
     // Remove selected images
     if (removeImages) {
@@ -78,9 +113,6 @@ export const updateCar = async (req, res) => {
         const filePath = path.join("uploads", img);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
-          console.log(`Deleted file: ${filePath}`);
-        } else {
-          console.log(`File not found: ${filePath}`);
         }
       });
     }

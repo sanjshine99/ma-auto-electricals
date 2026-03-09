@@ -1,38 +1,60 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Upload, Calendar, Car, DollarSign, X } from "lucide-react";
+import { Upload, Car, Plus, Trash2, Settings, X } from "lucide-react";
 
 const EditCar = ({ url, existingData, onSuccess }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    year: "",
-    model: "",
+    name: "", model: "", variant: "", year: "", price: "",
+    monthlyPayment: "", registration: "", mileage: "",
+    fuelType: "Petrol", transmission: "Manual", bodyType: "Hatchback",
+    engine: "", colour: "", description: "",
   });
-  const [images, setImages] = useState([]);
-  const [previews, setPreviews] = useState([]);
+  const [images,       setImages]       = useState([]);
+  const [previews,     setPreviews]     = useState([]);
   const [removeImages, setRemoveImages] = useState([]);
+  const [features,     setFeatures]     = useState([""]);
+  const [bonnetData,   setBonnetData]   = useState([]);
+  const [loading,      setLoading]      = useState(false);
 
+  // Pre-fill all fields from existingData
   useEffect(() => {
-    if (existingData) {
-      setFormData({
-        name: existingData.name,
-        description: existingData.description,
-        price: existingData.price,
-        year: existingData.year,
-        model: existingData.model,
-      });
-      setImages(existingData.images || []);
-      setPreviews(existingData.images ? existingData.images.map(img => `${url}/images/${img}`) : []);
-      setRemoveImages([]);
-    }
+    if (!existingData) return;
+    setFormData({
+      name:           existingData.name           || "",
+      model:          existingData.model          || "",
+      variant:        existingData.variant        || "",
+      year:           existingData.year           || "",
+      price:          existingData.price          || "",
+      monthlyPayment: existingData.monthlyPayment || "",
+      registration:   existingData.registration   || "",
+      mileage:        existingData.mileage        || "",
+      fuelType:       existingData.fuelType       || "Petrol",
+      transmission:   existingData.transmission   || "Manual",
+      bodyType:       existingData.bodyType       || "Hatchback",
+      engine:         existingData.engine         || "",
+      colour:         existingData.colour         || "",
+      description:    existingData.description    || "",
+    });
+    // Existing images as strings (filenames)
+    setImages(existingData.images   || []);
+    setPreviews((existingData.images || []).map(img => `${url}/images/${img}`));
+    setFeatures(existingData.features?.length ? existingData.features : [""]);
+    setBonnetData(existingData.bonnetData?.length ? existingData.bonnetData : [
+      { icon: "/fueltype.svg", title: "Fuel Type",     value: "" },
+      { icon: "/engine.svg",   title: "Engine Size",   value: "" },
+      { icon: "/power.svg",    title: "Max Power",     value: "" },
+      { icon: "/speed.svg",    title: "Top Speed",     value: "" },
+      { icon: "/emissions.svg",title: "CO₂ Emissions", value: "" },
+      { icon: "/mpg.svg",      title: "Combined MPG",  value: "" },
+      { icon: "/mot.svg",      title: "MOT Expiry",    value: "" },
+      { icon: "/tax.svg",      title: "Road Tax (12m)",value: "" },
+    ]);
+    setRemoveImages([]);
   }, [existingData, url]);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
@@ -42,137 +64,208 @@ const EditCar = ({ url, existingData, onSuccess }) => {
 
   const handleRemoveImage = (idx) => {
     const img = images[idx];
-    if (typeof img === "string") {
-      setRemoveImages(prev => [...prev, img]);
-    }
-    const newImages = [...images];
-    const newPreviews = [...previews];
-    newImages.splice(idx, 1);
-    newPreviews.splice(idx, 1);
-    setImages(newImages);
-    setPreviews(newPreviews);
+    if (typeof img === "string") setRemoveImages(prev => [...prev, img]);
+    setImages(prev => prev.filter((_, i) => i !== idx));
+    setPreviews(prev => prev.filter((_, i) => i !== idx));
   };
+
+  const addFeature    = () => setFeatures(prev => [...prev, ""]);
+  const removeFeature = (idx) => setFeatures(prev => prev.filter((_, i) => i !== idx));
+  const updateFeature = (idx, val) =>
+    setFeatures(prev => prev.map((f, i) => i === idx ? val : f));
+
+  const updateBonnet    = (idx, field, val) =>
+    setBonnetData(prev => prev.map((b, i) => i === idx ? { ...b, [field]: val } : b));
+  const addBonnetRow    = () =>
+    setBonnetData(prev => [...prev, { icon: "/fueltype.svg", title: "", value: "" }]);
+  const removeBonnetRow = (idx) =>
+    setBonnetData(prev => prev.filter((_, i) => i !== idx));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    const data = new FormData();
+    Object.entries(formData).forEach(([k, v]) => data.append(k, v));
+    data.append("features",     JSON.stringify(features.filter(f => f.trim())));
+    data.append("bonnetData",   JSON.stringify(bonnetData.filter(b => b.title && b.value)));
+    data.append("removeImages", JSON.stringify(removeImages));
+    images.forEach(img => { if (img instanceof File) data.append("images", img); });
+
     try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("description", formData.description);
-      data.append("price", formData.price);
-      data.append("year", formData.year);
-      data.append("model", formData.model);
-      data.append("removeImages", JSON.stringify(removeImages));
-
-      images.forEach(img => {
-        if (img instanceof File) data.append("images", img);
-      });
-
       const res = await axios.put(`${url}/api/cars/${existingData._id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
       if (res.data.success) {
         toast.success(res.data.message);
-        onSuccess();
+        if (onSuccess) onSuccess();
       } else {
         toast.error(res.data.message);
       }
     } catch (err) {
       console.error(err);
       toast.error("Failed to update car");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 py-6 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Edit Car</h1>
-          <p className="text-gray-600">Update the details below and click "Update Car"</p>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <form onSubmit={handleSubmit} className="p-6 sm:p-8 lg:p-10 space-y-8">
-
-            {/* Images */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-700 font-semibold">
-                <Upload className="w-5 h-5" />
-                <label>Upload Images (Max 5)</label>
-              </div>
-              <div className="relative">
-                <label
-                  htmlFor="images"
-                  className="group cursor-pointer w-full sm:w-full h-64 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-500 transition-all duration-300 overflow-hidden flex items-center justify-center bg-gray-50"
-                >
-                  {previews.length > 0 ? (
-                    <div className="flex flex-wrap gap-3 p-2 overflow-auto max-h-64">
-                      {previews.map((src, idx) => (
-                        <div key={idx} className="relative w-28 h-28 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
-                          <img src={src} alt={`preview-${idx}`} className="w-full h-full object-cover" />
-                          <button
-                            type="button"
-                            className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600"
-                            onClick={(e) => { e.preventDefault(); handleRemoveImage(idx); }}
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-center text-gray-400 group-hover:text-blue-500 transition-colors">
-                      <Upload className="w-12 h-12 mb-2" />
-                      <p className="text-sm font-medium">Click to upload</p>
-                      <p className="text-xs mt-1">PNG, JPG up to 10MB each</p>
-                    </div>
-                  )}
-                </label>
-                <input type="file" id="images" multiple accept="image/*" onChange={handleImagesChange} className="hidden" />
-              </div>
-            </div>
-
-            {/* Name */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-700 font-semibold"><Car className="w-5 h-5" /><label htmlFor="name">Car Name</label></div>
-              <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} placeholder="Enter car name" required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300" />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-700 font-semibold"><Car className="w-5 h-5" /><label htmlFor="description">Description</label></div>
-              <textarea name="description" id="description" value={formData.description} onChange={handleChange} rows="5" placeholder="Write detailed description..." required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300 resize-none" />
-            </div>
-
-            {/* Price & Year */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-gray-700 font-semibold"><DollarSign className="w-5 h-5" /><label htmlFor="price">Price</label></div>
-                <input type="number" name="price" id="price" value={formData.price} onChange={handleChange} placeholder="20000" required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition-all duration-300" />
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-gray-700 font-semibold"><Calendar className="w-5 h-5" /><label htmlFor="year">Year</label></div>
-                <input type="number" name="year" id="year" value={formData.year} onChange={handleChange} placeholder="2023" required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all duration-300" />
-              </div>
-            </div>
-
-            {/* Model */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-700 font-semibold"><Car className="w-5 h-5" /><label htmlFor="model">Model</label></div>
-              <input type="text" name="model" id="model" value={formData.model} onChange={handleChange} placeholder="Model name" required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none transition-all duration-300" />
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-4">
-              <button type="submit" className="w-full sm:w-auto px-8 py-3 bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Update Car</button>
-            </div>
-
-          </form>
-        </div>
+    <div className="bg-white py-6 px-4 sm:px-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-1">Edit Car</h1>
+        <p className="text-gray-500 text-sm">Update the details and click "Update Car"</p>
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+
+        {/* ── IMAGES ── */}
+        <Section icon={<Upload className="w-5 h-5" />} title="Car Images">
+          <label htmlFor="edit-car-images"
+            className="block cursor-pointer border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 transition p-4 bg-gray-50">
+            {previews.length > 0 ? (
+              <div className="flex flex-wrap gap-3">
+                {previews.map((src, idx) => (
+                  <div key={idx} className="relative w-24 h-24 rounded-lg overflow-hidden border shadow-sm">
+                    <img src={src} className="w-full h-full object-cover" alt="" />
+                    <button type="button"
+                      onClick={(e) => { e.preventDefault(); handleRemoveImage(idx); }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                <div className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-2xl">+</div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center py-8 text-gray-400">
+                <Upload className="w-10 h-10 mb-2" /><p className="text-sm">Click to add images</p>
+              </div>
+            )}
+          </label>
+          <input type="file" id="edit-car-images" multiple accept="image/*"
+            onChange={handleImagesChange} className="hidden" />
+        </Section>
+
+        {/* ── BASIC INFO ── */}
+        <Section icon={<Car className="w-5 h-5" />} title="Basic Information">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Make"                name="name"           value={formData.name}           onChange={handleChange} placeholder="Ford"    required />
+            <Field label="Model"               name="model"          value={formData.model}          onChange={handleChange} placeholder="KA"      required />
+            <Field label="Variant"             name="variant"        value={formData.variant}        onChange={handleChange} placeholder="Zetec Black Edition" />
+            <Field label="Year"                name="year"           value={formData.year}           onChange={handleChange} placeholder="2015"    type="number" required />
+            <Field label="Price (£)"           name="price"          value={formData.price}          onChange={handleChange} placeholder="2695"    type="number" required />
+            <Field label="Monthly Payment (£)" name="monthlyPayment" value={formData.monthlyPayment} onChange={handleChange} placeholder="0"       type="number" />
+            <Field label="Registration"        name="registration"   value={formData.registration}   onChange={handleChange} placeholder="AB15 XYZ" />
+            <Field label="Mileage"             name="mileage"        value={formData.mileage}        onChange={handleChange} placeholder="57887"   type="number" />
+          </div>
+        </Section>
+
+        {/* ── SPECS ── */}
+        <Section icon={<Settings className="w-5 h-5" />} title="Vehicle Specifications">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <SelectField label="Fuel Type"    name="fuelType"     value={formData.fuelType}     onChange={handleChange} options={["Petrol","Diesel","Electric","Hybrid","Plug-in Hybrid"]} />
+            <SelectField label="Transmission" name="transmission" value={formData.transmission} onChange={handleChange} options={["Manual","Automatic","Semi-Automatic"]} />
+            <SelectField label="Body Type"    name="bodyType"     value={formData.bodyType}     onChange={handleChange} options={["Hatchback","Saloon","Estate","SUV","Coupe","Convertible","Van","MPV"]} />
+            <Field label="Engine (e.g. 1.2L)" name="engine" value={formData.engine} onChange={handleChange} placeholder="1.2L" />
+            <Field label="Colour"             name="colour" value={formData.colour} onChange={handleChange} placeholder="Black" />
+          </div>
+        </Section>
+
+        {/* ── DESCRIPTION ── */}
+        <Section icon={<Car className="w-5 h-5" />} title="Description">
+          <textarea name="description" value={formData.description} onChange={handleChange}
+            rows="5" placeholder="Detailed description..." required
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none resize-none text-sm" />
+        </Section>
+
+        {/* ── FEATURES ── */}
+        <Section icon={<Plus className="w-5 h-5" />} title="Highlight Features">
+          <div className="space-y-2">
+            {features.map((f, idx) => (
+              <div key={idx} className="flex gap-2">
+                <input type="text" value={f} onChange={(e) => updateFeature(idx, e.target.value)}
+                  placeholder="e.g. Full Service History"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none" />
+                <button type="button" onClick={() => removeFeature(idx)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={addFeature}
+              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1">
+              <Plus className="w-4 h-4" /> Add Feature
+            </button>
+          </div>
+        </Section>
+
+        {/* ── UNDER THE BONNET ── */}
+        <Section icon={<Settings className="w-5 h-5" />} title="Under the Bonnet Data">
+          <p className="text-xs text-gray-400 mb-3">Leave value empty to hide that row on the listing.</p>
+          <div className="space-y-2">
+            {bonnetData.map((b, idx) => (
+              <div key={idx} className="grid grid-cols-12 gap-2 items-center">
+                <div className="col-span-1 flex justify-center">
+                  <img src={b.icon} alt="" className="w-6 h-6 opacity-50"
+                    onError={(e) => e.target.style.display = "none"} />
+                </div>
+                <input value={b.title} onChange={(e) => updateBonnet(idx, "title", e.target.value)}
+                  placeholder="Title"
+                  className="col-span-5 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none" />
+                <input value={b.value} onChange={(e) => updateBonnet(idx, "value", e.target.value)}
+                  placeholder="Value"
+                  className="col-span-5 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none" />
+                <button type="button" onClick={() => removeBonnetRow(idx)}
+                  className="col-span-1 p-1 text-red-400 hover:text-red-600">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={addBonnetRow}
+              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1">
+              <Plus className="w-4 h-4" /> Add Row
+            </button>
+          </div>
+        </Section>
+
+        <div className="pt-2 pb-6">
+          <button type="submit" disabled={loading}
+            className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg transition-all disabled:opacity-60">
+            {loading ? "Updating..." : "Update Car"}
+          </button>
+        </div>
+
+      </form>
     </div>
   );
 };
+
+const Section = ({ icon, title, children }) => (
+  <div className="space-y-3">
+    <div className="flex items-center gap-2 text-gray-700 font-semibold border-b pb-2">
+      {icon}<span>{title}</span>
+    </div>
+    {children}
+  </div>
+);
+
+const Field = ({ label, name, value, onChange, placeholder, type = "text", required }) => (
+  <div>
+    <label className="block text-xs text-gray-500 mb-1">{label}</label>
+    <input type={type} name={name} value={value} onChange={onChange}
+      placeholder={placeholder} required={required}
+      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none transition" />
+  </div>
+);
+
+const SelectField = ({ label, name, value, onChange, options }) => (
+  <div>
+    <label className="block text-xs text-gray-500 mb-1">{label}</label>
+    <select name={name} value={value} onChange={onChange}
+      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none bg-white">
+      {options.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  </div>
+);
 
 export default EditCar;
