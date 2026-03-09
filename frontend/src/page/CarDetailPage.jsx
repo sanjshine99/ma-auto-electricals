@@ -9,7 +9,7 @@ import VehicleDetailsSection from "../common/VehicleDetailsSection";
 import UnderTheBonnet        from "../common/UnderTheBonnet";
 import GallerySection        from "../common/Gallery";
 
-const API_URL ="http://localhost:4000";
+const API_URL =" https://ma-auto-electricals.onrender.com";
 
 export default function CarDetailPage() {
   const { slug }            = useParams(); // "ford-ka--676abc123def"

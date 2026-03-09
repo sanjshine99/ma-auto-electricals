@@ -3,7 +3,7 @@ import { ChevronRight, Car } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = "http://localhost:4000";
+const API_URL =" https://ma-auto-electricals.onrender.com";
 
 const toSlug = (car) =>
   `${car.name}-${car.model}`
