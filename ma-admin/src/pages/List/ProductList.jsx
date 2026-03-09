@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";

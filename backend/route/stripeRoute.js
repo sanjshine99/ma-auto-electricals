@@ -1,5 +1,5 @@
 import express from "express";
-import { createCheckoutSession, checkoutSuccess } from "../controlers/orderController.js";
+import { createCheckoutSession, checkoutSuccess } from "../controllers/orderController.js";
 
 const stripeRouter = express.Router();
 

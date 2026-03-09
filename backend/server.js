@@ -11,15 +11,28 @@ import "dotenv/config.js";
 import http from "http";
 import { Server } from "socket.io";
 
+// --- Configuration ---
 const app = express();
 const port = process.env.PORT || 4000;
+const clientUrl = process.env.CLIENT_URL;
 
+// Safety check for production configuration
+if (!clientUrl) {
+  console.error("FATAL ERROR: CLIENT_URL is not defined in .env file.");
+  process.exit(1);
+}
+
+// --- Middleware ---
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: clientUrl,
+  credentials: true, // Required if you use cookies or auth headers
+}));
+
 connectDB();
 app.use("/images", express.static("uploads"));
 
-// Attach routes
+// --- Routes ---
 app.use("/api/user", userRouter);
 app.use("/api/cars", carRouter);
 app.use("/api/products", productRouter);
@@ -27,12 +40,16 @@ app.use("/api/stripe", stripeRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/invoices", invoiceRouter);
 
-// Root endpoint
 app.get("/", (req, res) => res.send("API is running"));
 
 // --- HTTP + Socket.io ---
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, { 
+  cors: { 
+    origin: clientUrl,
+    methods: ["GET", "POST"]
+  } 
+});
 
 // Make io accessible in controllers
 app.set("io", io);

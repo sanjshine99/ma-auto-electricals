@@ -7,7 +7,7 @@ import {
     createService,
     updateService,
     deleteService 
-} from '../controlers/InvoiceController.js';
+} from '../controllers/InvoiceController.js';
 
 const router = express.Router();
 
