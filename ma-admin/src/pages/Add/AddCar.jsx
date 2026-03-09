@@ -31,8 +31,7 @@ const validate = (formData, images, features, bonnetData) => {
   if (!formData.price || isNaN(formData.price) || Number(formData.price) <= 0)
     errors.price = "Price must be a positive number";
 
-  if (formData.monthlyPayment && (isNaN(formData.monthlyPayment) || Number(formData.monthlyPayment) < 0))
-    errors.monthlyPayment = "Monthly payment must be 0 or more";
+ 
 
   if (formData.mileage && (isNaN(formData.mileage) || Number(formData.mileage) < 0))
     errors.mileage = "Mileage must be 0 or more";
