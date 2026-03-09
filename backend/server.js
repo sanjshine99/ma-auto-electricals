@@ -16,12 +16,12 @@ const port = process.env.PORT || 4000;
 
 // 2. Allowed Origins - Console log panni check pannuvom
 const allowedOrigins = [
-  "http://localhost:5174",
-  "http://localhost:5173"
+  process.env.ADMIN_URL,
+  process.env.CLIENT_URL
 ].map(url => url?.replace(/\/$/, "")); // Trailing slash (/) iruntha remove pannum
 
 console.log("Allowed Origins:", allowedOrigins);
-
+console.log("hi");
 // 3. CORS Options FIX
 const corsOptions = {
   origin: function (origin, callback) {
