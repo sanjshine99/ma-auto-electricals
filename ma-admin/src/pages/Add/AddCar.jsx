@@ -3,7 +3,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Upload, Car, Plus, Trash2, Settings, AlertCircle } from "lucide-react";
 
-// Default bonnet rows with realistic example values
 const BONNET_DEFAULTS = [
   { icon: "/fueltype.svg",  title: "Fuel Type",      value: "Petrol" },
   { icon: "/engine.svg",    title: "Engine Size",    value: "1.2L" },
@@ -15,7 +14,6 @@ const BONNET_DEFAULTS = [
   { icon: "/tax.svg",       title: "Road Tax (12m)", value: "£165" },
 ];
 
-// Validation rules
 const validate = (formData, images, features, bonnetData) => {
   const errors = {};
 
@@ -25,16 +23,30 @@ const validate = (formData, images, features, bonnetData) => {
   if (!formData.model.trim())
     errors.model = "Model is required (e.g. KA)";
 
-  if (!formData.year || isNaN(formData.year) || formData.year < 1900 || formData.year > new Date().getFullYear() + 1)
+  if (
+    !formData.year ||
+    isNaN(formData.year) ||
+    formData.year < 1900 ||
+    formData.year > new Date().getFullYear() + 1
+  )
     errors.year = `Year must be between 1900 and ${new Date().getFullYear() + 1}`;
 
   if (!formData.price || isNaN(formData.price) || Number(formData.price) <= 0)
     errors.price = "Price must be a positive number";
 
- 
+  if (!formData.registration.trim())
+    errors.registration = "Registration is required (e.g. AB15 XYZ)";
 
-  if (formData.mileage && (isNaN(formData.mileage) || Number(formData.mileage) < 0))
+  if (formData.mileage === "" || formData.mileage === null || formData.mileage === undefined)
+    errors.mileage = "Mileage is required";
+  else if (isNaN(formData.mileage) || Number(formData.mileage) < 0)
     errors.mileage = "Mileage must be 0 or more";
+
+  if (!formData.fuelType.trim())     errors.fuelType     = "Fuel type is required";
+  if (!formData.transmission.trim()) errors.transmission = "Transmission is required";
+  if (!formData.bodyType.trim())     errors.bodyType     = "Body type is required";
+  if (!formData.engine.trim())       errors.engine       = "Engine is required (e.g. 1.2L)";
+  if (!formData.colour.trim())       errors.colour       = "Colour is required";
 
   if (!formData.description.trim())
     errors.description = "Description is required";
@@ -46,13 +58,16 @@ const validate = (formData, images, features, bonnetData) => {
   else if (images.length > 15)
     errors.images = "Maximum 15 images allowed";
 
-  const filledFeatures = features.filter(f => f.trim());
+  const filledFeatures = features.filter((f) => f.trim());
   if (filledFeatures.length === 0)
     errors.features = "Add at least one feature (e.g. Full Service History)";
 
   const bonnetErrors = [];
   bonnetData.forEach((b, idx) => {
-    if ((b.title.trim() && !b.value.trim()) || (!b.title.trim() && b.value.trim())) {
+    if (
+      (b.title.trim() && !b.value.trim()) ||
+      (!b.title.trim() && b.value.trim())
+    ) {
       bonnetErrors.push(`Row ${idx + 1}: Both title and value must be filled, or both left empty`);
     }
   });
@@ -67,57 +82,62 @@ const AddCar = ({ url, onSuccess }) => {
     monthlyPayment: "", registration: "", mileage: "",
     fuelType: "Petrol", transmission: "Manual", bodyType: "Hatchback",
     engine: "", colour: "", description: "",
+    ulez: false,
   });
   const [images,     setImages]     = useState([]);
   const [previews,   setPreviews]   = useState([]);
   const [features,   setFeatures]   = useState(["Full Service History"]);
-  const [bonnetData, setBonnetData] = useState(BONNET_DEFAULTS.map(b => ({ ...b })));
+  const [bonnetData, setBonnetData] = useState(BONNET_DEFAULTS.map((b) => ({ ...b })));
   const [loading,    setLoading]    = useState(false);
   const [errors,     setErrors]     = useState({});
-  const [submitted,  setSubmitted]  = useState(false); // track if user tried submitting
+  const [submitted,  setSubmitted]  = useState(false);
 
   const clearError = (key) => {
-    if (errors[key]) setErrors(prev => { const e = { ...prev }; delete e[key]; return e; });
+    if (errors[key])
+      setErrors((prev) => { const e = { ...prev }; delete e[key]; return e; });
   };
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     clearError(e.target.name);
   };
+
+  const toggleUlez = () =>
+    setFormData((prev) => ({ ...prev, ulez: !prev.ulez }));
 
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
     const combined = [...images, ...files];
     if (combined.length > 15) {
-      setErrors(prev => ({ ...prev, images: "Maximum 15 images allowed" }));
+      setErrors((prev) => ({ ...prev, images: "Maximum 15 images allowed" }));
       return;
     }
     setImages(combined);
-    setPreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
+    setPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
     clearError("images");
   };
 
   const removeImage = (idx) => {
-    setImages(prev => prev.filter((_, i) => i !== idx));
-    setPreviews(prev => prev.filter((_, i) => i !== idx));
+    setImages((prev) => prev.filter((_, i) => i !== idx));
+    setPreviews((prev) => prev.filter((_, i) => i !== idx));
     clearError("images");
   };
 
-  const addFeature    = () => { setFeatures(prev => [...prev, ""]); clearError("features"); };
-  const removeFeature = (idx) => setFeatures(prev => prev.filter((_, i) => i !== idx));
+  const addFeature    = () => { setFeatures((prev) => [...prev, ""]); clearError("features"); };
+  const removeFeature = (idx) => setFeatures((prev) => prev.filter((_, i) => i !== idx));
   const updateFeature = (idx, val) => {
-    setFeatures(prev => prev.map((f, i) => i === idx ? val : f));
+    setFeatures((prev) => prev.map((f, i) => (i === idx ? val : f)));
     clearError("features");
   };
 
-  const updateBonnet = (idx, field, val) => {
-    setBonnetData(prev => prev.map((b, i) => i === idx ? { ...b, [field]: val } : b));
+  const updateBonnet    = (idx, field, val) => {
+    setBonnetData((prev) => prev.map((b, i) => (i === idx ? { ...b, [field]: val } : b)));
     clearError("bonnet");
   };
   const addBonnetRow    = () =>
-    setBonnetData(prev => [...prev, { icon: "/fueltype.svg", title: "", value: "" }]);
+    setBonnetData((prev) => [...prev, { icon: "/fueltype.svg", title: "", value: "" }]);
   const removeBonnetRow = (idx) =>
-    setBonnetData(prev => prev.filter((_, i) => i !== idx));
+    setBonnetData((prev) => prev.filter((_, i) => i !== idx));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -126,7 +146,6 @@ const AddCar = ({ url, onSuccess }) => {
     const validationErrors = validate(formData, images, features, bonnetData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      // Scroll to first error
       const firstErrorKey = Object.keys(validationErrors)[0];
       const el = document.querySelector(`[data-error="${firstErrorKey}"]`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -137,9 +156,9 @@ const AddCar = ({ url, onSuccess }) => {
     setLoading(true);
     const data = new FormData();
     Object.entries(formData).forEach(([k, v]) => data.append(k, v));
-    data.append("features",   JSON.stringify(features.filter(f => f.trim())));
-    data.append("bonnetData", JSON.stringify(bonnetData.filter(b => b.title && b.value)));
-    images.forEach(img => data.append("images", img));
+    data.append("features",   JSON.stringify(features.filter((f) => f.trim())));
+    data.append("bonnetData", JSON.stringify(bonnetData.filter((b) => b.title && b.value)));
+    images.forEach((img) => data.append("images", img));
 
     try {
       const res = await axios.post(`${url}/api/cars`, data, {
@@ -171,24 +190,30 @@ const AddCar = ({ url, onSuccess }) => {
         {/* ── IMAGES ── */}
         <Section icon={<Upload className="w-5 h-5" />} title="Car Images (Max 15)">
           <div data-error="images">
-            <label htmlFor="car-images"
+            <label
+              htmlFor="car-images"
               className={`block cursor-pointer border-2 border-dashed rounded-xl transition p-4 bg-gray-50 ${
                 errors.images ? "border-red-400 bg-red-50" : "border-gray-300 hover:border-green-500"
-              }`}>
+              }`}
+            >
               {previews.length > 0 ? (
                 <div className="flex flex-wrap gap-3">
                   {previews.map((src, idx) => (
                     <div key={idx} className="relative w-24 h-24 rounded-lg overflow-hidden border shadow-sm">
                       <img src={src} className="w-full h-full object-cover" alt="" />
-                      <button type="button"
+                      <button
+                        type="button"
                         onClick={(e) => { e.preventDefault(); removeImage(idx); }}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      >
                         ×
                       </button>
                     </div>
                   ))}
                   {previews.length < 15 && (
-                    <div className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-2xl">+</div>
+                    <div className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-2xl">
+                      +
+                    </div>
                   )}
                 </div>
               ) : (
@@ -199,8 +224,10 @@ const AddCar = ({ url, onSuccess }) => {
                 </div>
               )}
             </label>
-            <input type="file" id="car-images" multiple accept="image/*"
-              onChange={handleImagesChange} className="hidden" />
+            <input
+              type="file" id="car-images" multiple accept="image/*"
+              onChange={handleImagesChange} className="hidden"
+            />
             <ErrorMsg msg={errors.images} />
           </div>
         </Section>
@@ -208,37 +235,63 @@ const AddCar = ({ url, onSuccess }) => {
         {/* ── BASIC INFO ── */}
         <Section icon={<Car className="w-5 h-5" />} title="Basic Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Make (e.g. Ford)"     name="name"           value={formData.name}           onChange={handleChange} placeholder="Ford"     required error={errors.name} />
-            <Field label="Model (e.g. KA)"      name="model"          value={formData.model}          onChange={handleChange} placeholder="KA"       required error={errors.model} />
-            <Field label="Variant (e.g. Zetec)" name="variant"        value={formData.variant}        onChange={handleChange} placeholder="Zetec Black Edition" />
-            <Field label="Year"                 name="year"           value={formData.year}           onChange={handleChange} placeholder="2015"     type="number" required error={errors.year} />
-            <Field label="Price (£)"            name="price"          value={formData.price}          onChange={handleChange} placeholder="2695"     type="number" required error={errors.price} />
-           
-            <Field label="Registration"         name="registration"   value={formData.registration}   onChange={handleChange} placeholder="AB15 XYZ" />
-            <Field label="Mileage"              name="mileage"        value={formData.mileage}        onChange={handleChange} placeholder="57887"    type="number" error={errors.mileage} />
+            <Field label="Make (e.g. Ford)"     name="name"         value={formData.name}         onChange={handleChange} placeholder="Ford"      required error={errors.name} />
+            <Field label="Model (e.g. KA)"      name="model"        value={formData.model}        onChange={handleChange} placeholder="KA"        required error={errors.model} />
+            <Field label="Variant (e.g. Zetec)" name="variant"      value={formData.variant}      onChange={handleChange} placeholder="Zetec Black Edition" />
+            <Field label="Year"                 name="year"         value={formData.year}         onChange={handleChange} placeholder="2015"      type="number" required error={errors.year} />
+            <Field label="Price (£)"            name="price"        value={formData.price}        onChange={handleChange} placeholder="2695"      type="number" required error={errors.price} />
+            <Field label="Registration"         name="registration" value={formData.registration} onChange={handleChange} placeholder="AB15 XYZ"  required error={errors.registration} />
+            <Field label="Mileage"              name="mileage"      value={formData.mileage}      onChange={handleChange} placeholder="57887"     type="number" required error={errors.mileage} />
           </div>
         </Section>
 
         {/* ── SPECS ── */}
         <Section icon={<Settings className="w-5 h-5" />} title="Vehicle Specifications">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SelectField label="Fuel Type"    name="fuelType"     value={formData.fuelType}     onChange={handleChange} options={["Petrol","Diesel","Electric","Hybrid","Plug-in Hybrid"]} />
-            <SelectField label="Transmission" name="transmission" value={formData.transmission} onChange={handleChange} options={["Manual","Automatic","Semi-Automatic"]} />
-            <SelectField label="Body Type"    name="bodyType"     value={formData.bodyType}     onChange={handleChange} options={["Hatchback","Saloon","Estate","SUV","Coupe","Convertible","Van","MPV"]} />
-            <Field label="Engine (e.g. 1.2L)" name="engine"  value={formData.engine}  onChange={handleChange} placeholder="1.2L" />
-            <Field label="Colour"             name="colour"  value={formData.colour}  onChange={handleChange} placeholder="Midnight Black" />
+            <SelectField label="Fuel Type"    name="fuelType"     value={formData.fuelType}     onChange={handleChange} options={["Petrol","Diesel","Electric","Hybrid","Plug-in Hybrid"]} required error={errors.fuelType} />
+            <SelectField label="Transmission" name="transmission" value={formData.transmission} onChange={handleChange} options={["Manual","Automatic","Semi-Automatic"]}                 required error={errors.transmission} />
+            <SelectField label="Body Type"    name="bodyType"     value={formData.bodyType}     onChange={handleChange} options={["Hatchback","Saloon","Estate","SUV","Coupe","Convertible","Van","MPV"]} required error={errors.bodyType} />
+            <Field label="Engine (e.g. 1.2L)" name="engine" value={formData.engine} onChange={handleChange} placeholder="1.2L"          required error={errors.engine} />
+            <Field label="Colour"             name="colour" value={formData.colour} onChange={handleChange} placeholder="Midnight Black" required error={errors.colour} />
+
+            {/* ULEZ Toggle */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-gray-500">ULEZ Compliant</label>
+              <div className="flex items-center gap-3 mt-1">
+                <button
+                  type="button"
+                  onClick={toggleUlez}
+                  className={`relative w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
+                    formData.ulez ? "bg-green-500" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${
+                      formData.ulez ? "left-7" : "left-1"
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium ${formData.ulez ? "text-green-600" : "text-gray-400"}`}>
+                  {formData.ulez ? "Yes — ULEZ Compliant" : "No — Not ULEZ Compliant"}
+                </span>
+              </div>
+            </div>
           </div>
         </Section>
 
         {/* ── DESCRIPTION ── */}
         <Section icon={<Car className="w-5 h-5" />} title="Description">
           <div data-error="description">
-            <textarea name="description" value={formData.description} onChange={handleChange}
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
               rows="5"
-              placeholder="e.g. This stunning 2015 Ford KA Zetec Black Edition comes in beautiful Midnight Black with full service history, one previous owner, and drives superbly. Perfect first car or runaround. Just been fully serviced and comes with 12 months MOT."
+              placeholder="e.g. This stunning 2015 Ford KA Zetec Black Edition comes in beautiful Midnight Black with full service history, one previous owner, and drives superbly."
               className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none resize-none text-sm transition ${
                 errors.description ? "border-red-400 bg-red-50" : "border-gray-300"
-              }`} />
+              }`}
+            />
             <div className="flex justify-between items-center mt-1">
               <ErrorMsg msg={errors.description} />
               <span className={`text-xs ml-auto ${formData.description.length < 20 ? "text-gray-400" : "text-green-600"}`}>
@@ -268,15 +321,21 @@ const AddCar = ({ url, onSuccess }) => {
                     submitted && !f.trim() ? "border-orange-300 bg-orange-50" : "border-gray-300"
                   }`}
                 />
-                <button type="button" onClick={() => removeFeature(idx)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition">
+                <button
+                  type="button"
+                  onClick={() => removeFeature(idx)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
             <ErrorMsg msg={errors.features} />
-            <button type="button" onClick={addFeature}
-              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1">
+            <button
+              type="button"
+              onClick={addFeature}
+              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1"
+            >
               <Plus className="w-4 h-4" /> Add Feature
             </button>
           </div>
@@ -291,8 +350,10 @@ const AddCar = ({ url, onSuccess }) => {
             {bonnetData.map((b, idx) => (
               <div key={idx} className="grid grid-cols-12 gap-2 items-center">
                 <div className="col-span-1 flex justify-center">
-                  <img src={b.icon} alt="" className="w-6 h-6 opacity-50"
-                    onError={(e) => e.target.style.display = "none"} />
+                  <img
+                    src={b.icon} alt="" className="w-6 h-6 opacity-50"
+                    onError={(e) => (e.target.style.display = "none")}
+                  />
                 </div>
                 <input
                   value={b.title}
@@ -310,17 +371,21 @@ const AddCar = ({ url, onSuccess }) => {
                     errors.bonnet ? "border-orange-300" : "border-gray-300"
                   }`}
                 />
-                <button type="button" onClick={() => removeBonnetRow(idx)}
-                  className="col-span-1 p-1 text-red-400 hover:text-red-600 transition">
+                <button
+                  type="button"
+                  onClick={() => removeBonnetRow(idx)}
+                  className="col-span-1 p-1 text-red-400 hover:text-red-600 transition"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
-            {errors.bonnet && errors.bonnet.map((msg, i) => (
-              <ErrorMsg key={i} msg={msg} />
-            ))}
-            <button type="button" onClick={addBonnetRow}
-              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1">
+            {errors.bonnet && errors.bonnet.map((msg, i) => <ErrorMsg key={i} msg={msg} />)}
+            <button
+              type="button"
+              onClick={addBonnetRow}
+              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1"
+            >
               <Plus className="w-4 h-4" /> Add Row
             </button>
           </div>
@@ -328,14 +393,19 @@ const AddCar = ({ url, onSuccess }) => {
 
         {/* ── SUBMIT ── */}
         <div className="pt-2 pb-6 flex flex-col sm:flex-row items-start gap-3">
-          <button type="submit" disabled={loading}
-            className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg transition-all disabled:opacity-60">
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg transition-all disabled:opacity-60"
+          >
             {loading ? "Adding..." : "Add Car"}
           </button>
           {submitted && Object.keys(errors).length > 0 && (
             <div className="flex items-center gap-2 text-red-500 text-sm mt-1">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>Please fix {Object.keys(errors).length} error{Object.keys(errors).length > 1 ? "s" : ""} above</span>
+              <span>
+                Please fix {Object.keys(errors).length} error{Object.keys(errors).length > 1 ? "s" : ""} above
+              </span>
             </div>
           )}
         </div>
@@ -372,13 +442,20 @@ const Field = ({ label, name, value, onChange, placeholder, type = "text", requi
   </div>
 );
 
-const SelectField = ({ label, name, value, onChange, options }) => (
-  <div>
-    <label className="block text-xs text-gray-500 mb-1">{label}</label>
-    <select name={name} value={value} onChange={onChange}
-      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none bg-white">
-      {options.map(o => <option key={o} value={o}>{o}</option>)}
+const SelectField = ({ label, name, value, onChange, options, required, error }) => (
+  <div data-error={name}>
+    <label className="block text-xs text-gray-500 mb-1">
+      {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+    </label>
+    <select
+      name={name} value={value} onChange={onChange}
+      className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none bg-white transition ${
+        error ? "border-red-400 bg-red-50" : "border-gray-300"
+      }`}
+    >
+      {options.map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
+    <ErrorMsg msg={error} />
   </div>
 );
 

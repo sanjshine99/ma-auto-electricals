@@ -6,9 +6,13 @@ import {
 
 const VehicleDetailsPage = ({ vehicle }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+     console.log(vehicle);
   const details = [
-    { value: "ULEZ Compliant" },
+       {
+      value: vehicle.ulez ? " ULEZ Compliant" : " Not ULEZ Compliant",
+      ulez: true,
+      compliant: vehicle.ulez,
+    },
     { value: `${vehicle.year} (${vehicle.registration})` },
     { value: `${vehicle.mileage.toLocaleString()} mi` },
     { value: vehicle.fuelType },
@@ -117,9 +121,7 @@ const VehicleDetailsPage = ({ vehicle }) => {
                   <button className="bg-[#317F21] text-white py-3 rounded-full font-semibold hover:opacity-90 transition">
                     Contact Seller
                   </button>
-                  <p className="text-xs opacity-60">
-                    Trusted Gumtree-style listing
-                  </p>
+                 
                 </div>
               </div>
 
@@ -131,6 +133,7 @@ const VehicleDetailsPage = ({ vehicle }) => {
                     className="bg-[#317F21]/10 border border-[#317F21]/30 rounded-full px-3 py-2 text-center text-sm"
                   >
                     {item.value}
+                    
                   </div>
                 ))}
               </div>

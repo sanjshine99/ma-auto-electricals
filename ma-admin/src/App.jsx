@@ -25,7 +25,7 @@ import Signup from "./components/Signup";
 import InvoiceGenerator from "./pages/InvoicePage";
 import InvoiceDataPage from "./pages/InvoiceDataPage";
 
-const url = "https://ma-auto-electricals.onrender.com"; // Backend URL
+const url = import.meta.env.VITE_BACKEND_URL;
 
 /* ---------------- AUTH ROUTE ---------------- */
 const AuthRoute = ({ children }) => {

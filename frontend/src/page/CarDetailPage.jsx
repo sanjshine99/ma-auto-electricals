@@ -8,7 +8,7 @@ import VehicleDetailsPage    from "../common/BuyHeader";
 import VehicleDetailsSection from "../common/VehicleDetailsSection";
 import UnderTheBonnet        from "../common/UnderTheBonnet";
 
-const API_URL ="https://ma-auto-electricals.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function CarDetailPage() {
   const { slug }            = useParams(); // "ford-ka--676abc123def"
@@ -62,7 +62,7 @@ export default function CarDetailPage() {
     bodyType:       car.bodyType       || "",
     engine:         car.engine         || "",
     colour:         car.colour         || "",
-    // Full URL for each image
+    ulez:           car.ulez           || false,   // ← add this line
     images: (car.images || []).map(img => `${API_URL}/images/${img}`),
   };
 

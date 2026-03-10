@@ -21,7 +21,7 @@ const InvoiceAdmin = () => {
     });
 
     // Updated Render API URL
-    const API_URL = "https://ma-auto-electricals.onrender.com/api/invoices";
+ const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api/invoices`;
 
     const fetchInvoices = async () => {
         setLoading(true);

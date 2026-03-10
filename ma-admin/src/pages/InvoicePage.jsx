@@ -35,7 +35,7 @@ const InvoiceGenerator = () => {
   const borderColor = import.meta.env.VITE_BORDER_COLOR;
 
   // API base URL - update this to your backend URL
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ma-auto-electricals.onrender.com/api';
+  const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
   // Fetch all categories on component mount
   useEffect(() => {
