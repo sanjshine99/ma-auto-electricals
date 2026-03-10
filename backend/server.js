@@ -16,7 +16,7 @@ const port = process.env.PORT || 4000;
 
 const allowedOrigins = [
   process.env.ADMIN_URL,
-  "http://localhost:5173"
+  process.env.CLIENT_URL,
 ].map((url) => url?.replace(/\/$/, ""));
 
 console.log("Allowed Origins:", allowedOrigins);
