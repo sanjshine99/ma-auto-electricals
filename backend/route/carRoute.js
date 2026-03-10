@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { createCar, getCars, getCarById, updateCar, deleteCar } from "../controllers/carController.js";
-
+import authMiddleware from "../middleware/auth.js"
 const carRouter = express.Router();
 
 const storage = multer.diskStorage({
@@ -24,10 +24,10 @@ const handleMulterError = (err, req, res, next) => {
   next();
 };
 
-carRouter.post("/",      upload.array("images", 15), handleMulterError, createCar);
+carRouter.post("/",  authMiddleware,    upload.array("images", 15), handleMulterError, createCar);
 carRouter.get("/",       getCars);
 carRouter.get("/:id",    getCarById);
-carRouter.put("/:id",    upload.array("images", 15), handleMulterError, updateCar);
-carRouter.delete("/:id", deleteCar);
+carRouter.put("/:id",  authMiddleware,  upload.array("images", 15), handleMulterError, updateCar);
+carRouter.delete("/:id", authMiddleware, deleteCar);
 
 export default carRouter;

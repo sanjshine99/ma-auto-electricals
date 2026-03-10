@@ -205,11 +205,15 @@ const EditCar = ({ url, existingData, onSuccess }) => {
     imageItems
       .filter((item) => item.isNew)
       .forEach((item) => data.append("images", item.raw));
-
+     const token = localStorage.getItem("token");
+     
     try {
       const res = await axios.put(`${url}/api/cars/${existingData._id}`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+  headers: { 
+    "Content-Type": "multipart/form-data",
+    "Authorization": `Bearer ${token}` 
+  },
+});
       if (res.data.success) {
         toast.success(res.data.message);
         if (onSuccess) onSuccess();

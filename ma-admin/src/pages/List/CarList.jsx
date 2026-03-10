@@ -50,19 +50,29 @@ const CarList = ({ url }) => {
     }
   }, [url]);
 
-  const removeCar = async (id) => {
-    try {
-      setDeleteId(id);
-      await axios.delete(`${url}/api/cars/${id}`);
-      toast.success("Car deleted successfully");
-      fetchList();
-      setCarToDelete(null);
-    } catch (err) {
-      toast.error("Failed to delete car");
-    } finally {
-      setDeleteId(null);
-    }
-  };
+const removeCar = async (id) => {
+  try {
+    const token = localStorage.getItem("token"); // 1. Get the token
+    setDeleteId(id);
+    
+    // 2. Pass headers as the second argument
+    await axios.delete(`${url}/api/cars/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    toast.success("Car deleted successfully");
+    fetchList();
+    setCarToDelete(null);
+  } catch (err) {
+    // 3. Handle specific 401/403 errors if the token is invalid
+    const message = err.response?.status === 401 ? "Unauthorized: Please login" : "Failed to delete car";
+    toast.error(message);
+  } finally {
+    setDeleteId(null);
+  }
+};
 
   const openEdit = (car) => setEditingCar(car);
   const closeModal = () => {
