@@ -19,7 +19,7 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
 ].map((url) => url?.replace(/\/$/, ""));
 
-console.log("Allowed Origins:", allowedOrigins);
+
 
 const corsOptions = {
   origin: function (origin, callback) {

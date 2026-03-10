@@ -6,7 +6,7 @@ import {
 
 const VehicleDetailsPage = ({ vehicle }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-     console.log(vehicle);
+    
   const details = [
        {
       value: vehicle.ulez ? " ULEZ Compliant" : " Not ULEZ Compliant",

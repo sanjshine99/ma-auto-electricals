@@ -29,7 +29,7 @@ export default function Login({ url }) {
       });
 
       const data = await res.json();
-      console.log(data);
+
 
       if (data.success) {
         localStorage.setItem("token", data.token);

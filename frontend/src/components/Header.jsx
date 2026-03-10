@@ -236,7 +236,7 @@ export default function Navbar() {
 
             <HashLink to="/car" onClick={closeAll} className="block text-gray-300">Car</HashLink>
             <HashLink to="/product" onClick={closeAll} className="block text-gray-300">Product</HashLink>
-            <HashLink to="/#about" onClick={closeAll} className="block text-gray-300">About</HashLink>
+          
             <HashLink to="/contact" onClick={closeAll} className="block text-gray-300">Contact</HashLink>
 
             <a

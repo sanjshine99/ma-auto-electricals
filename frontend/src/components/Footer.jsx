@@ -4,24 +4,29 @@ import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 
 export default function Footer() {
-  const mapsUrl = "https://www.google.com/maps/search/?api=1&query=13+laburnum+drive+oswaldtwistle+accrington+bb5+3aw";
+  const mapsUrl =
+    "https://www.google.com/maps/search/?api=1&query=13+laburnum+drive+oswaldtwistle+accrington+bb5+3aw";
 
   return (
     <footer className="bg-gray-900 border-t border-gray-800 py-12">
       <div className="container mx-auto px-4 md:px-12">
         <div className="grid md:grid-cols-3 gap-8">
-          
+
           {/* Company Info */}
           <div>
             <div className="flex items-center space-x-3">
-              <span className="text-2xl font-bold text-[#317F21]">
-                MA Auto Electrics
-              </span>
+              <img
+                src="/logo.png"
+                alt="MA Auto Electrics"
+                className="h-12 w-auto object-contain"
+              />
             </div>
+
             <p className="text-gray-400 mb-4 mt-2">
-              Expert Auto Electrical Repairs & Advanced Diagnostics. 
+              Expert Auto Electrical Repairs & Advanced Diagnostics.
               Balanced, professional, and fits your full service range.
             </p>
+
             <div className="flex space-x-4">
               <a
                 href="https://web.facebook.com/maautoelectrics/"
@@ -39,13 +44,33 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-bold mb-4 text-[#317F21]">Quick Link</h3>
+            <h3 className="font-bold mb-4 text-[#317F21]">Quick Links</h3>
             <ul className="space-y-2 text-gray-400">
-              <li><HashLink smooth to="/#" className="hover:text-white transition-colors">Home</HashLink></li>
-              <li><HashLink smooth to="/#services" className="hover:text-white transition-colors">Services</HashLink></li>
-              <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-              <li><Link to="/product" className="hover:text-white transition-colors">Product</Link></li>
-              <li><Link to="/car" className="hover:text-white transition-colors">Car</Link></li>
+              <li>
+                <HashLink smooth to="/#" className="hover:text-white transition-colors">
+                  Home
+                </HashLink>
+              </li>
+              <li>
+                <HashLink smooth to="/#services" className="hover:text-white transition-colors">
+                  Services
+                </HashLink>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/product" className="hover:text-white transition-colors">
+                  Product
+                </Link>
+              </li>
+              <li>
+                <Link to="/car" className="hover:text-white transition-colors">
+                  Car
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -55,9 +80,16 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-400">
               <li>MA Auto Electrics</li>
               <li>
-                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                  13 Laburnum Drive, Oswaldtwistle<br />
-                  Accrington, BB5 3AW<br />
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  13 Laburnum Drive, Oswaldtwistle
+                  <br />
+                  Accrington, BB5 3AW
+                  <br />
                   United Kingdom
                 </a>
               </li>
@@ -67,7 +99,10 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="mailto:maautoelectrics@gmail.com" className="hover:text-white transition-colors break-all">
+                <a
+                  href="mailto:maautoelectrics@gmail.com"
+                  className="hover:text-white transition-colors break-all"
+                >
                   maautoelectrics@gmail.com
                 </a>
               </li>
@@ -82,13 +117,23 @@ export default function Footer() {
 
         <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-3 text-center font-semibold text-gray-400">
           <div className="flex gap-4 text-sm">
-            <Link to="/terms" className="hover:text-[#317F21] transition">Terms & Conditions</Link>
+            <Link to="/terms" className="hover:text-[#317F21] transition">
+              Terms & Conditions
+            </Link>
             <span className="text-gray-500">|</span>
-            <Link to="/privacy" className="hover:text-[#317F21] transition">Privacy Policy</Link>
+            <Link to="/privacy" className="hover:text-[#317F21] transition">
+              Privacy Policy
+            </Link>
           </div>
+
           <p className="text-sm">
             Powered by{" "}
-            <a href="https://www.ansely.co.uk/" target="_blank" rel="noopener noreferrer" className="text-[#317F21] hover:underline">
+            <a
+              href="https://www.ansely.co.uk/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#317F21] hover:underline"
+            >
               Ansely
             </a>
           </p>

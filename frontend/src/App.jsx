@@ -12,7 +12,7 @@ import ProductPage from "./page/ProductPage";
 import ProductDetails from "./components/Product/ProductDetails";
 import CartPage from "./components/Product/CartPage";
 import SuccessPage from "./components/Product/SuccessPage";
-import Nissan from "./page/Nissan";
+
 import MotPage from "../src/page/mot"
 import ParkingPage from "./page/Parking";
 import InstallationPage from "./page/Installation";
@@ -22,8 +22,7 @@ import CarStereosPage from "./page/CarStereos";
 import CarSecurityPage from "./page/CarSecurity";
 import CarRepairPage from "./page/CarRepair";
 import VehicleTrackingPage from "./page/VehicleTracking";
-import Ford from "./page/Ford";
-import Vauxhall from "./page/Vauxhall";
+
 import AdBluePage from "./page/AdBlue";
 import EGRPage from "./page/EGR";
 import ECUPage from "./page/ECU";
@@ -66,7 +65,7 @@ function App() {
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/success" element={<SuccessPage />} />
-        <Route path="/nissan" element={<Nissan />} />
+       
         <Route path="/mot" element={<MotPage />} />
         <Route path="/parking" element={<ParkingPage />} />
         <Route path="/installation" element={<InstallationPage />} />
@@ -85,8 +84,7 @@ function App() {
         <Route path="/WindowRegulators" element={<WindowRegulatorsPage />} />
         <Route path="/BrakePads" element={<BrakePadsPage />} />
         <Route path="/mechanical" element={<MechanicalPage />} />
-        <Route path="/ford" element={<Ford />} />
-        <Route path="/vauxhall" element={<Vauxhall />} />
+       
         <Route path="/car" element={<CarPage />} />
         <Route path="/car/:slug" element={<CarDetailPage />} />
       </Routes>
