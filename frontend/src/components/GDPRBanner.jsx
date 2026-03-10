@@ -78,6 +78,7 @@ export default function GDPRConsent() {
               src="/revisit.svg"
               alt="Cookie Icon"
               className="w-5 h-5 object-contain"
+              loading="lazy"
             />
           </button>
         </div>

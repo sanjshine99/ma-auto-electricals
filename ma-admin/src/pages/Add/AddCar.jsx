@@ -233,7 +233,7 @@ const AddCar = ({ url, onSuccess }) => {
                     idx === 0 ? "border-yellow-400" : "border-gray-200"
                   }`}
                 >
-                  <img src={item.src} className="w-full h-full object-cover" alt="" />
+                  <img src={item.src} className="w-full h-full object-cover" alt="" loading="lazy" />
 
                   {/* Star button — set as primary */}
                   {idx !== 0 && (
@@ -414,7 +414,7 @@ const AddCar = ({ url, onSuccess }) => {
             {bonnetData.map((b, idx) => (
               <div key={idx} className="grid grid-cols-12 gap-2 items-center">
                 <div className="col-span-1 flex justify-center">
-                  <img src={b.icon} alt="" className="w-6 h-6 opacity-50"
+                  <img src={b.icon} alt="" className="w-6 h-6 opacity-50" loading="lazy"
                     onError={(e) => (e.target.style.display = "none")} />
                 </div>
                 <input

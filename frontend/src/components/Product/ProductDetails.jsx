@@ -69,6 +69,7 @@ export default function ProductDetails() {
                 src={`${API_URL}/images/${product.images[0]}`}
                 alt={product.name}
                 className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
+                loading="lazy"
               />
             </div>
           </div>

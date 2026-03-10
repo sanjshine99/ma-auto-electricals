@@ -61,6 +61,7 @@ export default function GallerySection({ images }) {
                 alt="gallery"
                 className="w-full h-56 sm:h-64 md:h-80 object-cover cursor-pointer border-4 border-[#317F21] hover:scale-105 transition-transform duration-300"
                 onClick={() => openPopup(index)}
+                loading="lazy"
               />
             </div>
           ))}
@@ -80,6 +81,7 @@ export default function GallerySection({ images }) {
                 alt="thumb"
                 className="w-full h-20 sm:h-24 object-cover cursor-pointer border-2 border-[#317F21]/50 hover:scale-105 transition-transform"
                 onClick={() => openPopup(index + 2)}
+                loading="lazy"
               />
             </div>
           ))}
@@ -111,6 +113,7 @@ export default function GallerySection({ images }) {
             src={images[activeIndex]}
             alt="preview"
             className="max-w-[95%] md:max-w-[80%] max-h-[75vh] rounded-2xl shadow-2xl border-4 border-[#317F21]"
+            loading="lazy"
           />
 
           {/* Previous */}

@@ -33,6 +33,7 @@ export default function UnderTheBonnet({ items }) {
                     src={item.icon}
                     alt={item.title}
                     className="w-8 h-8"
+                    loading="lazy"
                   />
                 </div>
               )}

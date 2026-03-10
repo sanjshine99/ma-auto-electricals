@@ -48,6 +48,7 @@ const VehicleDetailsPage = ({ vehicle }) => {
                   src={vehicle.images[currentImageIndex]}
                   alt={`${vehicle.make} ${vehicle.model}`}
                   className="w-full h-80 sm:h-96 md:h-[520px] object-cover"
+                  loading="lazy"
                 />
 
                 {/* Arrows */}
@@ -90,6 +91,7 @@ const VehicleDetailsPage = ({ vehicle }) => {
                       src={img}
                       alt="thumb"
                       className="w-20 h-20 object-cover"
+                      loading="lazy"
                     />
                   </button>
                 ))}

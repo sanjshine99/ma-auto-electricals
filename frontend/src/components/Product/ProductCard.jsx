@@ -473,6 +473,7 @@ export default function ProductCard() {
                   <img
                     src={`${API_URL}/images/${product.images?.[0]}`}
                     alt={product.name}
+                    loading="lazy"
                     className="h-36 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
                   />
                   {product.category && (

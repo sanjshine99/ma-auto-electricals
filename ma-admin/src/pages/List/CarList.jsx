@@ -297,6 +297,7 @@ const CarList = ({ url }) => {
                             src={`${url}/images/${car.images?.[0]}`}
                             alt={car.name}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                         </div>
                       </td>
@@ -370,6 +371,7 @@ const CarList = ({ url }) => {
                           src={`${url}/images/${car.images?.[0]}`}
                           alt={car.name}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       </div>
                     </div>
@@ -557,6 +559,7 @@ const CarList = ({ url }) => {
                       src={`${url}/images/${carToDelete.images?.[0]}`}
                       alt={carToDelete.name}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                   <div className="flex-1 min-w-0">

@@ -249,6 +249,7 @@ const EditCar = ({ url, existingData, onSuccess }) => {
                     src={imageItems[0].src}
                     className="w-full h-full object-cover"
                     alt="Primary"
+                    loading="lazy"
                   />
                   <div className="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                     <Star className="w-3 h-3 fill-white" /> Primary
@@ -276,6 +277,7 @@ const EditCar = ({ url, existingData, onSuccess }) => {
                       type="button"
                       onClick={() => handleSetPrimary(idx)}
                       title="Set as primary image"
+                      loading="lazy"
                       className="absolute top-1 left-1 bg-white/80 hover:bg-yellow-400 hover:text-white text-gray-500 rounded-full w-6 h-6 flex items-center justify-center transition"
                     >
                       <Star className="w-3 h-3" />
@@ -439,7 +441,7 @@ const EditCar = ({ url, existingData, onSuccess }) => {
             {bonnetData.map((b, idx) => (
               <div key={idx} className="grid grid-cols-12 gap-2 items-center">
                 <div className="col-span-1 flex justify-center">
-                  <img src={b.icon} alt="" className="w-6 h-6 opacity-50"
+                  <img src={b.icon} alt="" className="w-6 h-6 opacity-50" loading="lazy"
                     onError={(e) => (e.target.style.display = "none")} />
                 </div>
                 <input value={b.title} onChange={(e) => updateBonnet(idx, "title", e.target.value)}

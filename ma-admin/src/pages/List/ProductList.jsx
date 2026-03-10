@@ -288,6 +288,7 @@ const ProductList = ({ url }) => {
                             src={`${url}/images/${item.images?.[0]}`}
                             alt={item.name}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                         </div>
                       </td>
@@ -376,6 +377,7 @@ const ProductList = ({ url }) => {
                           src={`${url}/images/${item.images?.[0]}`}
                           alt={item.name}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       </div>
                     </div>
@@ -568,6 +570,7 @@ const ProductList = ({ url }) => {
                       src={`${url}/images/${productToDelete.images?.[0]}`}
                       alt={productToDelete.name}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                   <div className="flex-1 min-w-0">

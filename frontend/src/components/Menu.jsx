@@ -127,6 +127,7 @@ export default function MenuPage() {
                 <img
                   src={item.img}
                   className="w-32 h-24 rounded-lg object-cover bg-black"
+                  loading="lazy"
                 />
                 <div className="flex-1">
                   <div className="flex justify-between items-center">

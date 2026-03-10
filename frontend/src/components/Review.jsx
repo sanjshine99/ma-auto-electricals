@@ -50,6 +50,7 @@ const ReviewsSection = () => {
                 src={review.img}
                 alt={review.name}
                 className="w-10 h-10 rounded-full object-cover"
+                loading="lazy"
               />
               <p className="text-gray-200 text-sm">{review.name}</p>
             </div>

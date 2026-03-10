@@ -107,7 +107,7 @@ export default function Navbar() {
           
           {/* Logo */}
           <div onClick={() => navigate("/")} className="cursor-pointer">
-            <img src="/logo.png" alt="Logo" className="h-12" />
+            <img src="/logo.png" alt="Logo" className="h-12" loading="lazy"/>
           </div>
 
           {/* Desktop Navigation */}

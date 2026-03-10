@@ -130,6 +130,7 @@ export default function CartPage() {
                 <img
                   src={`${API_URL}/images/${item.images?.[0]}`}
                   alt={item.name}
+                  loading="lazy"
                   className="w-40 h-40 object-cover rounded-xl cursor-pointer"
                   onClick={() => navigate(`/products/${item._id}`)}
                 />

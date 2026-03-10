@@ -19,6 +19,7 @@ export default function Footer() {
                 src="/logo.png"
                 alt="MA Auto Electrics"
                 className="h-12 w-auto object-contain"
+                loading="lazy"
               />
             </div>
 
