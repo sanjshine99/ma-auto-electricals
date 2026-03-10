@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import authMiddleware from "../middleware/auth.js";
 import {
   createProduct,
   getProducts,
@@ -31,10 +32,10 @@ const fileFilter = (req, file, cb) => {
 };
 
 // 3. Multer Middleware
-const upload = multer({ 
+const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
 // 4. Helper for Multer Errors
@@ -48,16 +49,13 @@ const handleMulterError = (err, req, res, next) => {
 };
 
 // --- Routes ---
-
-// Added handleMulterError middleware here
-productRouter.post("/", upload.array("images", 5), handleMulterError, createProduct);
-
+// Public read endpoints
 productRouter.get("/", getProducts);
 productRouter.get("/:id", getProductById);
 
-// Added handleMulterError here as well
-productRouter.put("/:id", upload.array("images", 5), handleMulterError, updateProduct);
-
-productRouter.delete("/:id", deleteProduct);
+// Protected write endpoints (require admin auth)
+productRouter.post("/", authMiddleware, upload.array("images", 5), handleMulterError, createProduct);
+productRouter.put("/:id", authMiddleware, upload.array("images", 5), handleMulterError, updateProduct);
+productRouter.delete("/:id", authMiddleware, deleteProduct);
 
 export default productRouter;

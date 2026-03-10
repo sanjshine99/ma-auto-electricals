@@ -17,16 +17,17 @@ const port = process.env.PORT || 4000;
 const allowedOrigins = [
   process.env.ADMIN_URL,
   process.env.CLIENT_URL,
-].map((url) => url?.replace(/\/$/, ""));
-
-console.log("Allowed Origins:", allowedOrigins);
+].map((url) => url?.replace(/\/$/, "")).filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow server-to-server requests (no origin) only in development
+    if (!origin && process.env.NODE_ENV !== "production") {
+      return callback(null, true);
+    }
+    if (origin && allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log("Blocked by CORS:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },

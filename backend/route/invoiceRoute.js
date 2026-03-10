@@ -1,4 +1,5 @@
 import express from 'express';
+import authMiddleware from '../middleware/auth.js';
 import {
     getAllCategories,
     getServicesByCategory,
@@ -6,22 +7,20 @@ import {
     getServiceById,
     createService,
     updateService,
-    deleteService 
+    deleteService
 } from '../controllers/InvoiceController.js';
 
 const router = express.Router();
 
-
+// Public read endpoints
 router.get('/all', getAllServices);
 router.get('/categories', getAllCategories);
 router.get('/category/:category', getServicesByCategory);
 router.get('/:serviceId', getServiceById);
 
-
-router.post('/create', createService);
-router.put('/update/:serviceId', updateService);
-
-
-router.delete('/delete/:serviceId', deleteService);
+// Protected write endpoints (require admin auth)
+router.post('/create', authMiddleware, createService);
+router.put('/update/:serviceId', authMiddleware, updateService);
+router.delete('/delete/:serviceId', authMiddleware, deleteService);
 
 export default router;

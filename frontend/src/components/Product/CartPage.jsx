@@ -74,14 +74,14 @@ export default function CartPage() {
 
   const validateForm = () => {
     const { name, email, address, phone } = userDetails;
-    if (!name.trim()) return toast.error("Name is required", { duration: 1500 }) && false;
-    if (!email.trim()) return toast.error("Email is required", { duration: 1500 }) && false;
+    if (!name.trim()) { toast.error("Name is required", { duration: 1500 }); return false; }
+    if (!email.trim()) { toast.error("Email is required", { duration: 1500 }); return false; }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return toast.error("Invalid email format", { duration: 1500 }) && false;
-    if (!address.trim()) return toast.error("Address is required", { duration: 1500 }) && false;
-    if (!phone.trim()) return toast.error("Phone is required", { duration: 1500 }) && false;
+    if (!emailRegex.test(email)) { toast.error("Invalid email format", { duration: 1500 }); return false; }
+    if (!address.trim()) { toast.error("Address is required", { duration: 1500 }); return false; }
+    if (!phone.trim()) { toast.error("Phone is required", { duration: 1500 }); return false; }
     const phoneRegex = /^[0-9]{7,15}$/;
-    if (!phoneRegex.test(phone)) return toast.error("Phone number is invalid", { duration: 1500 }) && false;
+    if (!phoneRegex.test(phone)) { toast.error("Phone number is invalid", { duration: 1500 }); return false; }
     return true;
   };
 
@@ -234,7 +234,7 @@ export default function CartPage() {
                       }
                     />
                     <input
-                      type="text"
+                      type="tel"
                       placeholder="Phone"
                       className="border p-3 rounded-md w-full"
                       value={userDetails.phone}

@@ -1,20 +1,19 @@
 import jwt from "jsonwebtoken";
 
 const authMiddleware = async (req, res, next) => {
-    const { token } = req.headers;
-    
-    if (!token) {
-        // 401 Unauthorized: The client failed to provide credentials
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ success: false, message: "Not Authorized. Login Again." });
     }
 
+    const token = authHeader.split(" ")[1];
+
     try {
         const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-        req.body.userId = token_decode.id;
+        req.userId = token_decode.id; // attach to req directly, not req.body
         next();
     } catch (error) {
-        // 403 Forbidden: The token is invalid or expired
-        console.error("JWT Verification Error:", error.message);
         return res.status(403).json({ success: false, message: "Invalid or expired token." });
     }
 };

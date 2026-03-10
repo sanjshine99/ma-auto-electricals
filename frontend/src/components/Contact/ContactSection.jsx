@@ -210,7 +210,7 @@ export default function ContactSection() {
               <div className="space-y-1 mb-4">
                 <p className="font-semibold text-[#111827] ">MA Auto Electrics</p>
                 <p className="text-sm text-gray-500 ">
-                  13 laburnum drive oswaldtwistele
+                  13 Laburnum Drive, Oswaldtwistle
 accrington bb5 3aw,
 United Kingdom
                 </p>

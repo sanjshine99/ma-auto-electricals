@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 
+const url = import.meta.env.VITE_BACKEND_URL;
+
 export default function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
   const [isVerified, setIsVerified] = useState(null);
@@ -13,9 +15,12 @@ export default function ProtectedRoute({ children }) {
         return;
       }
       try {
-        // Unga API endpoint-kku token-ah anupunga
-        const response = await axios.post("https://ma-auto-electricals.onrender.com/api/user/checkTokenCorrect", { token });
-        
+        const response = await axios.post(
+          `${url}/api/user/checkTokenCorrect`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
         if (response.data.success) {
           setIsVerified(true);
         } else {
@@ -23,13 +28,14 @@ export default function ProtectedRoute({ children }) {
           setIsVerified(false);
         }
       } catch (error) {
+        localStorage.removeItem("token");
         setIsVerified(false);
       }
     };
     checkAuth();
   }, [token]);
 
-  if (isVerified === null) return null; // Loading state (blank screen)
+  if (isVerified === null) return null;
 
   return isVerified ? children : <Navigate to="/" replace />;
 }

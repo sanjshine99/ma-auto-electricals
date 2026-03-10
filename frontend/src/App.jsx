@@ -5,7 +5,7 @@ import TermsConditions from "./components/Term";
 import Home from "./page/Home";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import ScrollToTop from "./components/ScrollToTop";
-import GDPRBanner from "../src/components/GDPRBanner"
+import GDPRBanner from "./components/GDPRBanner"
 import Navbar from "./components/Header";
 import ContactPage from "./page/Contact";
 import ProductPage from "./page/ProductPage";
@@ -13,7 +13,7 @@ import ProductDetails from "./components/Product/ProductDetails";
 import CartPage from "./components/Product/CartPage";
 import SuccessPage from "./components/Product/SuccessPage";
 import Nissan from "./page/Nissan";
-import MotPage from "../src/page/mot"
+import MotPage from "./page/mot"
 import ParkingPage from "./page/Parking";
 import InstallationPage from "./page/Installation";
 import HandfreePage from "./page/Handfree";
@@ -34,7 +34,7 @@ import WindowRegulatorsPage from "./page/WindowRegulators";
 import BrakePadsPage from "./page/BrakePads";
 import MechanicalPage from "./page/Mechanical";
 import CarPage from "./page/CarPage"
-import CarDetailPage from "../src/page/CarDetailPage"
+import CarDetailPage from "./page/CarDetailPage"
 import ScrollToHash from "./components/ScrollToHash";
 import { FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 
@@ -76,19 +76,20 @@ function App() {
         <Route path="/car-security" element={<CarSecurityPage />} />
         <Route path="/car-repair" element={<CarRepairPage />} />
         <Route path="/vehicle-tracking" element={<VehicleTrackingPage />} />
-        <Route path="/AdBlue" element={<AdBluePage />} />
-        <Route path="/EGR" element={<EGRPage />} />
+        <Route path="/adblue" element={<AdBluePage />} />
+        <Route path="/egr" element={<EGRPage />} />
         <Route path="/ecu-repair-services" element={<ECUPage />} />
-        <Route path="/Car-Electrics" element={<CarElectricsPage />} />
+        <Route path="/car-electrics" element={<CarElectricsPage />} />
         <Route path="/central-door-motors" element={<CentralDoorMotorsPage />} />
-        <Route path="/WiperMotors" element={<WiperMotorsPage />} />
-        <Route path="/WindowRegulators" element={<WindowRegulatorsPage />} />
-        <Route path="/BrakePads" element={<BrakePadsPage />} />
+        <Route path="/wiper-motors" element={<WiperMotorsPage />} />
+        <Route path="/window-regulators" element={<WindowRegulatorsPage />} />
+        <Route path="/brake-pads" element={<BrakePadsPage />} />
         <Route path="/mechanical" element={<MechanicalPage />} />
         <Route path="/ford" element={<Ford />} />
         <Route path="/vauxhall" element={<Vauxhall />} />
         <Route path="/car" element={<CarPage />} />
         <Route path="/car/:slug" element={<CarDetailPage />} />
+        <Route path="*" element={<Home />} />
       </Routes>
       <Footer />
       <GDPRBanner />

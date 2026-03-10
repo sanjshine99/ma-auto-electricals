@@ -1,18 +1,6 @@
 import productModel from "../models/ProductModel.js";
 import fs from "fs";
-import multer from "multer";
 import path from "path";
-
-// Multer config
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-export const upload = multer({ storage });
 
 // --- CREATE product ---
 export const createProduct = async (req, res) => {
@@ -67,7 +55,7 @@ export const updateProduct = async (req, res) => {
     const product = await productModel.findById(req.params.id);
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-    const { name, description, price, count, category, removeImages,isBestSelling } = req.body;
+    const { name, description, price, count, category, removeImages, isBestSelling } = req.body;
 
     if (name) product.name = name;
     if (description) product.description = description;
@@ -75,10 +63,8 @@ export const updateProduct = async (req, res) => {
     if (count) product.count = Number(count);
     if (category) product.category = category;
     if (isBestSelling !== undefined) {
-      
       product.isBestSelling = isBestSelling === "true" || isBestSelling === true;
     }
-   
 
     // Remove images
     if (removeImages) {
