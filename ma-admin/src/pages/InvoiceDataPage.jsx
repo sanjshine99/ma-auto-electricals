@@ -120,7 +120,7 @@ const InvoiceAdmin = () => {
             <div className="max-w-6xl mx-auto">
                 <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-l-4 border-blue-600 pl-6">
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter text-slate-800">MA AUTO ELECTRICALS</h1>
+                        <h1 className="text-4xl font-black tracking-tighter text-slate-800">MA Auto Electrics</h1>
                         <p className="text-slate-500 font-medium">Service Inventory & Pricing (GBP)</p>
                     </div>
                 </header>
