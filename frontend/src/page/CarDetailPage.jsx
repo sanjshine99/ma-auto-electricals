@@ -7,9 +7,8 @@ import { ArrowLeft, Car } from "lucide-react";
 import VehicleDetailsPage    from "../common/BuyHeader";
 import VehicleDetailsSection from "../common/VehicleDetailsSection";
 import UnderTheBonnet        from "../common/UnderTheBonnet";
-import GallerySection        from "../common/Gallery";
 
-const API_URL =" https://ma-auto-electricals.onrender.com";
+const API_URL ="https://ma-auto-electricals.onrender.com";
 
 export default function CarDetailPage() {
   const { slug }            = useParams(); // "ford-ka--676abc123def"
@@ -97,7 +96,7 @@ export default function CarDetailPage() {
       <VehicleDetailsPage    vehicle={vehicleData} />
       <VehicleDetailsSection data={vehicleDetails} />
       {bonnetItems.length > 0 && <UnderTheBonnet items={bonnetItems} />}
-      <GallerySection images={galleryImages} />
+      
     </div>
   );
 }
