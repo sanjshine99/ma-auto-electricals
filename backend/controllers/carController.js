@@ -10,7 +10,7 @@ export const createCar = async (req, res) => {
     }
 
     const images = req.files.map((file) => file.filename);
-     
+
     let features = [];
     let bonnetData = [];
     try { features   = JSON.parse(req.body.features   || "[]"); } catch {}
@@ -77,30 +77,28 @@ export const updateCar = async (req, res) => {
     const {
       name, model, variant, description, price, year, monthlyPayment,
       registration, mileage, fuelType, transmission, bodyType, engine,
-      colour, ulez, removeImages,
+      colour, ulez, removeImages, orderedImages,
     } = req.body;
 
-    if (name)                    car.name           = name;
-    if (model)                   car.model          = model;
-    if (variant !== undefined)   car.variant        = variant;
-    if (description)             car.description    = description;
-    if (price)                   car.price          = Number(price);
-    if (year)                    car.year           = Number(year);
+    if (name)                         car.name           = name;
+    if (model)                        car.model          = model;
+    if (variant !== undefined)        car.variant        = variant;
+    if (description)                  car.description    = description;
+    if (price)                        car.price          = Number(price);
+    if (year)                         car.year           = Number(year);
     if (monthlyPayment !== undefined) car.monthlyPayment = Number(monthlyPayment);
-    if (registration)            car.registration   = registration;
-    if (mileage !== undefined)   car.mileage        = Number(mileage);
-    if (fuelType)                car.fuelType       = fuelType;
-    if (transmission)            car.transmission   = transmission;
-    if (bodyType)                car.bodyType       = bodyType;
-    if (engine)                  car.engine         = engine;
-    if (colour)                  car.colour         = colour;
+    if (registration)                 car.registration   = registration;
+    if (mileage !== undefined)        car.mileage        = Number(mileage);
+    if (fuelType)                     car.fuelType       = fuelType;
+    if (transmission)                 car.transmission   = transmission;
+    if (bodyType)                     car.bodyType       = bodyType;
+    if (engine)                       car.engine         = engine;
+    if (colour)                       car.colour         = colour;
 
-    // ulez is a boolean — handle "true"/"false" strings from FormData
     if (ulez !== undefined) {
       car.ulez = ulez === "true" || ulez === true;
     }
 
-    // Parse features and bonnetData
     if (req.body.features) {
       try { car.features = JSON.parse(req.body.features); } catch {}
     }
@@ -108,20 +106,32 @@ export const updateCar = async (req, res) => {
       try { car.bonnetData = JSON.parse(req.body.bonnetData); } catch {}
     }
 
-    // Remove selected images
+    // 1. Remove deleted images from disk
     if (removeImages) {
       const imagesToRemove = JSON.parse(removeImages);
-      car.images = car.images.filter((img) => !imagesToRemove.includes(img));
       imagesToRemove.forEach((img) => {
         const filePath = path.join("uploads", img);
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       });
     }
 
-    // Add new uploaded images
+    // 2. Build the new images array:
+    //    - Start with the ordered existing filenames (primary first)
+    //    - Then append any newly uploaded files
+    let finalImages = [];
+
+    if (orderedImages) {
+      // orderedImages = existing filenames in the order admin chose (primary at index 0)
+      finalImages = JSON.parse(orderedImages);
+    }
+
     if (req.files && req.files.length > 0) {
-      const newImages = req.files.map((file) => file.filename);
-      car.images = [...car.images, ...newImages];
+      const newFilenames = req.files.map((file) => file.filename);
+      finalImages = [...finalImages, ...newFilenames];
+    }
+
+    if (finalImages.length > 0) {
+      car.images = finalImages;
     }
 
     await car.save();

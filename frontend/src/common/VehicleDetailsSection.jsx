@@ -66,7 +66,7 @@ export default function VehicleDetailsSection({ data }) {
         </div>
 
         {/* DELIVERY QUOTE CARD */}
-        <div
+        {/* <div
           data-aos="fade-up"
           className="bg-[#317F21] rounded-2xl text-center py-10 px-6 shadow-md"
         >
@@ -83,7 +83,7 @@ export default function VehicleDetailsSection({ data }) {
           <p className="text-[#EAFBEA] text-sm mt-4">
             Delivery to mainland UK only, excludes NI, highlands, ferry crossing and toll costs.
           </p>
-        </div>
+        </div> */}
 
       </div>
     </section>

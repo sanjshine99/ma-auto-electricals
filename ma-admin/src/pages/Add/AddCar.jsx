@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Upload, Car, Plus, Trash2, Settings, AlertCircle } from "lucide-react";
+import { Upload, Car, Plus, Trash2, Settings, AlertCircle, Star } from "lucide-react";
 
 const BONNET_DEFAULTS = [
   { icon: "/fueltype.svg",  title: "Fuel Type",      value: "Petrol" },
@@ -14,7 +14,7 @@ const BONNET_DEFAULTS = [
   { icon: "/tax.svg",       title: "Road Tax (12m)", value: "£165" },
 ];
 
-const validate = (formData, images, features, bonnetData) => {
+const validate = (formData, imageItems, features, bonnetData) => {
   const errors = {};
 
   if (!formData.name.trim())
@@ -53,9 +53,9 @@ const validate = (formData, images, features, bonnetData) => {
   else if (formData.description.trim().length < 20)
     errors.description = "Description must be at least 20 characters";
 
-  if (images.length === 0)
+  if (imageItems.length === 0)
     errors.images = "At least one image is required";
-  else if (images.length > 15)
+  else if (imageItems.length > 15)
     errors.images = "Maximum 15 images allowed";
 
   const filledFeatures = features.filter((f) => f.trim());
@@ -84,8 +84,9 @@ const AddCar = ({ url, onSuccess }) => {
     engine: "", colour: "", description: "",
     ulez: false,
   });
-  const [images,     setImages]     = useState([]);
-  const [previews,   setPreviews]   = useState([]);
+
+  // Each entry: { src: string (preview URL), raw: File }
+  const [imageItems, setImageItems] = useState([]);
   const [features,   setFeatures]   = useState(["Full Service History"]);
   const [bonnetData, setBonnetData] = useState(BONNET_DEFAULTS.map((b) => ({ ...b })));
   const [loading,    setLoading]    = useState(false);
@@ -105,22 +106,32 @@ const AddCar = ({ url, onSuccess }) => {
   const toggleUlez = () =>
     setFormData((prev) => ({ ...prev, ulez: !prev.ulez }));
 
+  // Add new images
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    const combined = [...images, ...files];
+    const combined = [...imageItems, ...files.map((f) => ({ src: URL.createObjectURL(f), raw: f }))];
     if (combined.length > 15) {
       setErrors((prev) => ({ ...prev, images: "Maximum 15 images allowed" }));
       return;
     }
-    setImages(combined);
-    setPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+    setImageItems(combined);
     clearError("images");
   };
 
+  // Remove image
   const removeImage = (idx) => {
-    setImages((prev) => prev.filter((_, i) => i !== idx));
-    setPreviews((prev) => prev.filter((_, i) => i !== idx));
+    setImageItems((prev) => prev.filter((_, i) => i !== idx));
     clearError("images");
+  };
+
+  // Set primary — move to index 0
+  const handleSetPrimary = (idx) => {
+    setImageItems((prev) => {
+      const updated = [...prev];
+      const [picked] = updated.splice(idx, 1);
+      updated.unshift(picked);
+      return updated;
+    });
   };
 
   const addFeature    = () => { setFeatures((prev) => [...prev, ""]); clearError("features"); };
@@ -130,7 +141,7 @@ const AddCar = ({ url, onSuccess }) => {
     clearError("features");
   };
 
-  const updateBonnet    = (idx, field, val) => {
+  const updateBonnet = (idx, field, val) => {
     setBonnetData((prev) => prev.map((b, i) => (i === idx ? { ...b, [field]: val } : b)));
     clearError("bonnet");
   };
@@ -143,7 +154,7 @@ const AddCar = ({ url, onSuccess }) => {
     e.preventDefault();
     setSubmitted(true);
 
-    const validationErrors = validate(formData, images, features, bonnetData);
+    const validationErrors = validate(formData, imageItems, features, bonnetData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       const firstErrorKey = Object.keys(validationErrors)[0];
@@ -158,7 +169,9 @@ const AddCar = ({ url, onSuccess }) => {
     Object.entries(formData).forEach(([k, v]) => data.append(k, v));
     data.append("features",   JSON.stringify(features.filter((f) => f.trim())));
     data.append("bonnetData", JSON.stringify(bonnetData.filter((b) => b.title && b.value)));
-    images.forEach((img) => data.append("images", img));
+
+    // Send images in order — primary (index 0) first
+    imageItems.forEach((item) => data.append("images", item.raw));
 
     try {
       const res = await axios.post(`${url}/api/cars`, data, {
@@ -190,44 +203,104 @@ const AddCar = ({ url, onSuccess }) => {
         {/* ── IMAGES ── */}
         <Section icon={<Upload className="w-5 h-5" />} title="Car Images (Max 15)">
           <div data-error="images">
-            <label
-              htmlFor="car-images"
-              className={`block cursor-pointer border-2 border-dashed rounded-xl transition p-4 bg-gray-50 ${
-                errors.images ? "border-red-400 bg-red-50" : "border-gray-300 hover:border-green-500"
-              }`}
-            >
-              {previews.length > 0 ? (
-                <div className="flex flex-wrap gap-3">
-                  {previews.map((src, idx) => (
-                    <div key={idx} className="relative w-24 h-24 rounded-lg overflow-hidden border shadow-sm">
-                      <img src={src} className="w-full h-full object-cover" alt="" />
-                      <button
-                        type="button"
-                        onClick={(e) => { e.preventDefault(); removeImage(idx); }}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  {previews.length < 15 && (
-                    <div className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-2xl">
-                      +
+
+            {/* Primary large preview */}
+            {imageItems.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                  <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                  <span>Primary image <span className="text-gray-400">(shown first in listing)</span></span>
+                </p>
+                <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-yellow-400 shadow">
+                  <img
+                    src={imageItems[0].src}
+                    className="w-full h-full object-cover"
+                    alt="Primary"
+                  />
+                  <div className="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-white" /> Primary
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Thumbnails grid */}
+            <div className="flex flex-wrap gap-3 mb-3">
+              {imageItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`relative w-24 h-24 rounded-lg overflow-hidden border-2 shadow-sm transition ${
+                    idx === 0 ? "border-yellow-400" : "border-gray-200"
+                  }`}
+                >
+                  <img src={item.src} className="w-full h-full object-cover" alt="" />
+
+                  {/* Star button — set as primary */}
+                  {idx !== 0 && (
+                    <button
+                      type="button"
+                      onClick={() => handleSetPrimary(idx)}
+                      title="Set as primary image"
+                      className="absolute top-1 left-1 bg-white/80 hover:bg-yellow-400 hover:text-white text-gray-500 rounded-full w-6 h-6 flex items-center justify-center transition"
+                    >
+                      <Star className="w-3 h-3" />
+                    </button>
+                  )}
+
+                  {/* Primary badge */}
+                  {idx === 0 && (
+                    <div className="absolute top-1 left-1 bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center">
+                      <Star className="w-3 h-3 text-white fill-white" />
                     </div>
                   )}
+
+                  {/* Remove button */}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx)}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                  >
+                    ×
+                  </button>
                 </div>
-              ) : (
+              ))}
+
+              {/* Add more */}
+              {imageItems.length < 15 && (
+                <label
+                  htmlFor="car-images"
+                  className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 hover:border-green-500 flex flex-col items-center justify-center text-gray-400 hover:text-green-500 cursor-pointer transition"
+                >
+                  <Upload className="w-5 h-5 mb-1" />
+                  <span className="text-xs">Add</span>
+                </label>
+              )}
+            </div>
+
+            {/* Empty state */}
+            {imageItems.length === 0 && (
+              <label
+                htmlFor="car-images"
+                className={`block cursor-pointer border-2 border-dashed rounded-xl transition p-4 bg-gray-50 ${
+                  errors.images ? "border-red-400 bg-red-50" : "border-gray-300 hover:border-green-500"
+                }`}
+              >
                 <div className="flex flex-col items-center py-8 text-gray-400">
                   <Upload className="w-10 h-10 mb-2" />
                   <p className="text-sm font-medium">Click to upload images</p>
                   <p className="text-xs mt-1">PNG, JPG, WEBP up to 5MB each</p>
                 </div>
-              )}
-            </label>
+              </label>
+            )}
+
             <input
               type="file" id="car-images" multiple accept="image/*"
               onChange={handleImagesChange} className="hidden"
             />
+
+            <p className="text-xs text-gray-400 mt-2">
+              Click the <Star className="w-3 h-3 inline text-yellow-500 fill-yellow-400" /> star on any image to make it the primary (first shown) image.
+            </p>
             <ErrorMsg msg={errors.images} />
           </div>
         </Section>
@@ -283,9 +356,7 @@ const AddCar = ({ url, onSuccess }) => {
         <Section icon={<Car className="w-5 h-5" />} title="Description">
           <div data-error="description">
             <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              name="description" value={formData.description} onChange={handleChange}
               rows="5"
               placeholder="e.g. This stunning 2015 Ford KA Zetec Black Edition comes in beautiful Midnight Black with full service history, one previous owner, and drives superbly."
               className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none resize-none text-sm transition ${
@@ -307,8 +378,7 @@ const AddCar = ({ url, onSuccess }) => {
             {features.map((f, idx) => (
               <div key={idx} className="flex gap-2">
                 <input
-                  type="text"
-                  value={f}
+                  type="text" value={f}
                   onChange={(e) => updateFeature(idx, e.target.value)}
                   placeholder={
                     idx === 0 ? "e.g. Full Service History" :
@@ -321,21 +391,15 @@ const AddCar = ({ url, onSuccess }) => {
                     submitted && !f.trim() ? "border-orange-300 bg-orange-50" : "border-gray-300"
                   }`}
                 />
-                <button
-                  type="button"
-                  onClick={() => removeFeature(idx)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
-                >
+                <button type="button" onClick={() => removeFeature(idx)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
             <ErrorMsg msg={errors.features} />
-            <button
-              type="button"
-              onClick={addFeature}
-              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1"
-            >
+            <button type="button" onClick={addFeature}
+              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1">
               <Plus className="w-4 h-4" /> Add Feature
             </button>
           </div>
@@ -350,10 +414,8 @@ const AddCar = ({ url, onSuccess }) => {
             {bonnetData.map((b, idx) => (
               <div key={idx} className="grid grid-cols-12 gap-2 items-center">
                 <div className="col-span-1 flex justify-center">
-                  <img
-                    src={b.icon} alt="" className="w-6 h-6 opacity-50"
-                    onError={(e) => (e.target.style.display = "none")}
-                  />
+                  <img src={b.icon} alt="" className="w-6 h-6 opacity-50"
+                    onError={(e) => (e.target.style.display = "none")} />
                 </div>
                 <input
                   value={b.title}
@@ -371,21 +433,15 @@ const AddCar = ({ url, onSuccess }) => {
                     errors.bonnet ? "border-orange-300" : "border-gray-300"
                   }`}
                 />
-                <button
-                  type="button"
-                  onClick={() => removeBonnetRow(idx)}
-                  className="col-span-1 p-1 text-red-400 hover:text-red-600 transition"
-                >
+                <button type="button" onClick={() => removeBonnetRow(idx)}
+                  className="col-span-1 p-1 text-red-400 hover:text-red-600 transition">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
             {errors.bonnet && errors.bonnet.map((msg, i) => <ErrorMsg key={i} msg={msg} />)}
-            <button
-              type="button"
-              onClick={addBonnetRow}
-              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1"
-            >
+            <button type="button" onClick={addBonnetRow}
+              className="flex items-center gap-1 text-green-600 text-sm hover:underline mt-1">
               <Plus className="w-4 h-4" /> Add Row
             </button>
           </div>
@@ -393,19 +449,14 @@ const AddCar = ({ url, onSuccess }) => {
 
         {/* ── SUBMIT ── */}
         <div className="pt-2 pb-6 flex flex-col sm:flex-row items-start gap-3">
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg transition-all disabled:opacity-60"
-          >
+          <button type="submit" disabled={loading}
+            className="w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg transition-all disabled:opacity-60">
             {loading ? "Adding..." : "Add Car"}
           </button>
           {submitted && Object.keys(errors).length > 0 && (
             <div className="flex items-center gap-2 text-red-500 text-sm mt-1">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>
-                Please fix {Object.keys(errors).length} error{Object.keys(errors).length > 1 ? "s" : ""} above
-              </span>
+              <span>Please fix {Object.keys(errors).length} error{Object.keys(errors).length > 1 ? "s" : ""} above</span>
             </div>
           )}
         </div>
@@ -432,8 +483,7 @@ const Field = ({ label, name, value, onChange, placeholder, type = "text", requi
       {label}{required && <span className="text-red-400 ml-0.5">*</span>}
     </label>
     <input
-      type={type} name={name} value={value} onChange={onChange}
-      placeholder={placeholder}
+      type={type} name={name} value={value} onChange={onChange} placeholder={placeholder}
       className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none transition ${
         error ? "border-red-400 bg-red-50" : "border-gray-300"
       }`}
@@ -447,12 +497,10 @@ const SelectField = ({ label, name, value, onChange, options, required, error })
     <label className="block text-xs text-gray-500 mb-1">
       {label}{required && <span className="text-red-400 ml-0.5">*</span>}
     </label>
-    <select
-      name={name} value={value} onChange={onChange}
+    <select name={name} value={value} onChange={onChange}
       className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none bg-white transition ${
         error ? "border-red-400 bg-red-50" : "border-gray-300"
-      }`}
-    >
+      }`}>
       {options.map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
     <ErrorMsg msg={error} />
@@ -462,8 +510,7 @@ const SelectField = ({ label, name, value, onChange, options, required, error })
 const ErrorMsg = ({ msg }) =>
   msg ? (
     <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
-      <AlertCircle className="w-3 h-3 flex-shrink-0" />
-      {msg}
+      <AlertCircle className="w-3 h-3 flex-shrink-0" />{msg}
     </p>
   ) : null;
 
