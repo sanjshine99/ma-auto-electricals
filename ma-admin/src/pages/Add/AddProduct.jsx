@@ -52,12 +52,14 @@ const AddProduct = ({ url }) => {
     const data = new FormData();
     Object.keys(formData).forEach((key) => data.append(key, formData[key]));
     images.forEach((img) => data.append("images", img));
-
+    const token = localStorage.getItem("token");
     try {
       const res = await axios.post(`${url}/api/products`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
+  headers: { 
+    "Content-Type": "multipart/form-data",
+    "Authorization": `Bearer ${token}` 
+  },
+});
       if (res.data.success) {
         toast.success(res.data.message);
         setFormData({ name: "", description: "", price: "", count: "", category: "" });

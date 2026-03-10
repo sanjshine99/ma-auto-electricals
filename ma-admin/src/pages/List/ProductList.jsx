@@ -48,19 +48,34 @@ const ProductList = ({ url }) => {
   }, [url]);
 
   const removeProduct = async (productId) => {
-    try {
-      setDeleteId(productId);
-      await axios.delete(`${url}/api/products/${productId}`);
-      toast.success("Product deleted successfully");
-      fetchList();
-      setProductToDelete(null);
-    } catch (error) {
-      console.error("Error deleting:", error);
-      toast.error("Failed to delete product");
-    } finally {
-      setDeleteId(null);
-    }
-  };
+  try {
+    // 1. Get the token from localStorage
+    const token = localStorage.getItem("token"); 
+    setDeleteId(productId);
+    
+    // 2. Add the Authorization header to the request
+    await axios.delete(`${url}/api/products/${productId}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    toast.success("Product deleted successfully");
+    fetchList();
+    setProductToDelete(null);
+  } catch (error) {
+    console.error("Error deleting:", error);
+    
+    // 3. Optional: Better error messaging for auth issues
+    const errorMessage = error.response?.status === 401 
+      ? "Unauthorized: Please log in again" 
+      : "Failed to delete product";
+      
+    toast.error(errorMessage);
+  } finally {
+    setDeleteId(null);
+  }
+};
 
   const openEdit = (product) => setEditingProduct(product);
   const closeModal = () => setEditingProduct(null);

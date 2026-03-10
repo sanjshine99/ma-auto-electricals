@@ -70,11 +70,13 @@ const EditProduct = ({ url, existingData, onSuccess, onClose }) => {
       images.forEach(img => {
         if (img instanceof File) data.append("images", img);
       });
-
+   const token = localStorage.getItem("token");
       const res = await axios.put(`${url}/api/products/${existingData._id}`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
+  headers: { 
+    "Content-Type": "multipart/form-data",
+    "Authorization": `Bearer ${token}` 
+  },
+});
       if (res.data.success) {
         toast.success(res.data.message);
         onSuccess();
