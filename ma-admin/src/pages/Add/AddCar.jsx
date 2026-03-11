@@ -4,14 +4,14 @@ import { toast } from "react-toastify";
 import { Upload, Car, Plus, Trash2, Settings, AlertCircle, Star } from "lucide-react";
 
 const BONNET_DEFAULTS = [
-  { icon: "/fueltype.svg",  title: "Fuel Type",      value: "Petrol" },
-  { icon: "/engine.svg",    title: "Engine Size",    value: "1.2L" },
-  { icon: "/power.svg",     title: "Max Power",      value: "85 bhp" },
-  { icon: "/speed.svg",     title: "Top Speed",      value: "109 mph" },
-  { icon: "/emissions.svg", title: "CO₂ Emissions",  value: "119 g/km" },
-  { icon: "/mpg.svg",       title: "Combined MPG",   value: "55.4 mpg" },
-  { icon: "/mot.svg",       title: "MOT Expiry",     value: "March 2026" },
-  { icon: "/tax.svg",       title: "Road Tax (12m)", value: "£165" },
+  { icon: "/fueltype.svg",  title: "Fuel Type",      placeholder: "e.g. Petrol" },
+  { icon: "/engine.svg",    title: "Engine Size",    placeholder: "e.g. 1.2L" },
+  { icon: "/power.svg",     title: "Max Power",      placeholder: "e.g. 85 bhp" },
+  { icon: "/speed.svg",     title: "Top Speed",      placeholder: "e.g. 109 mph" },
+  { icon: "/emissions.svg", title: "CO₂ Emissions",  placeholder: "e.g. 119 g/km" },
+  { icon: "/mpg.svg",       title: "Combined MPG",   placeholder: "e.g. 55.4 mpg" },
+  { icon: "/mot.svg",       title: "MOT Expiry",     placeholder: "e.g. March 2026" },
+  { icon: "/tax.svg",       title: "Road Tax (12m)", placeholder: "e.g. £165" },
 ];
 
 const validate = (formData, imageItems, features, bonnetData) => {
@@ -88,7 +88,7 @@ const AddCar = ({ url, onSuccess }) => {
   // Each entry: { src: string (preview URL), raw: File }
   const [imageItems, setImageItems] = useState([]);
   const [features,   setFeatures]   = useState(["Full Service History"]);
-  const [bonnetData, setBonnetData] = useState(BONNET_DEFAULTS.map((b) => ({ ...b })));
+  const [bonnetData, setBonnetData] = useState(BONNET_DEFAULTS.map((b) => ({ ...b, value: "" })));
   const [loading,    setLoading]    = useState(false);
   const [errors,     setErrors]     = useState({});
   const [submitted,  setSubmitted]  = useState(false);
@@ -146,7 +146,7 @@ const AddCar = ({ url, onSuccess }) => {
     clearError("bonnet");
   };
   const addBonnetRow    = () =>
-    setBonnetData((prev) => [...prev, { icon: "/fueltype.svg", title: "", value: "" }]);
+    setBonnetData((prev) => [...prev, { icon: "/fueltype.svg", title: "", value: "", placeholder: "" }]);
   const removeBonnetRow = (idx) =>
     setBonnetData((prev) => prev.filter((_, i) => i !== idx));
 
@@ -182,6 +182,19 @@ const AddCar = ({ url, onSuccess }) => {
 });
       if (res.data.success) {
         toast.success(res.data.message);
+        // Reset all form state after successful submission
+        setFormData({
+          name: "", model: "", variant: "", year: "", price: "",
+          monthlyPayment: "", registration: "", mileage: "",
+          fuelType: "Petrol", transmission: "Manual", bodyType: "Hatchback",
+          engine: "", colour: "", description: "",
+          ulez: false,
+        });
+        setImageItems([]);
+        setFeatures(["Full Service History"]);
+        setBonnetData(BONNET_DEFAULTS.map((b) => ({ ...b, value: "" })));
+        setErrors({});
+        setSubmitted(false);
         if (onSuccess) onSuccess();
       } else {
         toast.error(res.data.message);
@@ -411,7 +424,7 @@ const AddCar = ({ url, onSuccess }) => {
         {/* ── UNDER THE BONNET ── */}
         <Section icon={<Settings className="w-5 h-5" />} title="Under the Bonnet Data">
           <p className="text-xs text-gray-400 mb-3">
-            Pre-filled with example values — update them to match this car. Leave both title and value empty to hide a row.
+            Enter the title and value for each spec. Placeholder shows an example — type the actual value for this car. Leave both empty to hide a row.
           </p>
           <div className="space-y-2" data-error="bonnet">
             {bonnetData.map((b, idx) => (
@@ -431,7 +444,7 @@ const AddCar = ({ url, onSuccess }) => {
                 <input
                   value={b.value}
                   onChange={(e) => updateBonnet(idx, "value", e.target.value)}
-                  placeholder="Value e.g. Petrol"
+                  placeholder={b.placeholder || "e.g. value"}
                   className={`col-span-5 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-500 outline-none transition ${
                     errors.bonnet ? "border-orange-300" : "border-gray-300"
                   }`}

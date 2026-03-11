@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children }) {
         return;
       }
       try {
-        // Unga API endpoint-kku token-ah anupunga
+       
         const response = await axios.post("https://ma-auto-electricals.onrender.com/api/user/checkTokenCorrect", { token });
         
         if (response.data.success) {
@@ -29,7 +29,7 @@ export default function ProtectedRoute({ children }) {
     checkAuth();
   }, [token]);
 
-  if (isVerified === null) return null; // Loading state (blank screen)
+  if (isVerified === null) return null; 
 
   return isVerified ? children : <Navigate to="/" replace />;
 }

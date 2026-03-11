@@ -143,7 +143,7 @@ const App = () => {
         </Route>
 
         {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/signup" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
