@@ -17,6 +17,8 @@ const InvoiceGenerator = () => {
     count: 1 
   }]);
 
+  const [formErrors, setFormErrors] = useState({});
+
   // API data states
   const [categories, setCategories] = useState([]);
   const [servicesByCategory, setServicesByCategory] = useState({});
@@ -159,7 +161,40 @@ const InvoiceGenerator = () => {
     } : { r: 0, g: 0, b: 0 };
   };
 
+  const validateForm = () => {
+    const errors = {};
+
+    if (!customerName.trim())
+      errors.customerName = "Customer name is required";
+
+    if (!invoiceNumber.trim())
+      errors.invoiceNumber = "Invoice number is required";
+
+    if (!date)
+      errors.date = "Invoice date is required";
+
+    const validItems = items.filter(item => item.description.trim() && item.price > 0);
+    if (validItems.length === 0)
+      errors.items = "At least one item with a description and price is required";
+
+    const hasEmptyItem = items.some(item => !item.description.trim() || item.price <= 0);
+    if (hasEmptyItem && validItems.length > 0)
+      errors.items = "All items must have a description and a price greater than 0";
+
+    return errors;
+  };
+
   const downloadPDF = () => {
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      // Scroll to first error
+      const firstKey = Object.keys(errors)[0];
+      const el = document.querySelector(`[data-error="${firstKey}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    setFormErrors({});
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     let yPos = 20;
@@ -424,36 +459,44 @@ const InvoiceGenerator = () => {
                 INVOICE
               </h2>
               <div className="flex flex-col gap-2">
-                <div className="text-xs md:text-sm flex items-center md:justify-end gap-2" style={{ color: accentColor }}>
-                  <span className="font-bold whitespace-nowrap">Invoice #:</span>
-                  <input 
-                    className="px-2 py-1 border text-xs md:text-sm flex-1 md:flex-none"
-                    style={{ 
-                      width: '100%',
-                      maxWidth: '120px',
-                      borderColor: borderColor,
-                      fontFamily: 'Georgia, "Times New Roman", Times, serif'
-                    }}
-                    type="text" 
-                    placeholder="INV-001"
-                    value={invoiceNumber} 
-                    onChange={(e) => setInvoiceNumber(e.target.value)} 
-                  />
+                <div data-error="invoiceNumber" className="text-xs md:text-sm flex flex-col items-end gap-1">
+                  <div className="flex items-center md:justify-end gap-2" style={{ color: accentColor }}>
+                    <span className="font-bold whitespace-nowrap">Invoice #:</span>
+                    <input 
+                      className="px-2 py-1 border text-xs md:text-sm flex-1 md:flex-none"
+                      style={{ 
+                        width: '100%',
+                        maxWidth: '120px',
+                        borderColor: formErrors.invoiceNumber ? '#ef4444' : borderColor,
+                        backgroundColor: formErrors.invoiceNumber ? '#fef2f2' : 'transparent',
+                        fontFamily: 'Georgia, "Times New Roman", Times, serif'
+                      }}
+                      type="text" 
+                      placeholder="INV-001"
+                      value={invoiceNumber} 
+                      onChange={(e) => { setInvoiceNumber(e.target.value); setFormErrors(p => ({...p, invoiceNumber: ''})); }} 
+                    />
+                  </div>
+                  {formErrors.invoiceNumber && <p className="text-red-500 text-xs">{formErrors.invoiceNumber}</p>}
                 </div>
-                <div className="text-xs md:text-sm flex items-center md:justify-end gap-2" style={{ color: accentColor }}>
-                  <span className="font-bold whitespace-nowrap">Date:</span>
-                  <input 
-                    className="px-2 py-1 border text-xs md:text-sm flex-1 md:flex-none"
-                    style={{ 
-                      width: '100%',
-                      maxWidth: '130px',
-                      borderColor: borderColor,
-                      fontFamily: 'Georgia, "Times New Roman", Times, serif'
-                    }}
-                    type="date" 
-                    value={date} 
-                    onChange={(e) => setDate(e.target.value)} 
-                  />
+                <div data-error="date" className="text-xs md:text-sm flex flex-col items-end gap-1">
+                  <div className="flex items-center md:justify-end gap-2" style={{ color: accentColor }}>
+                    <span className="font-bold whitespace-nowrap">Date:</span>
+                    <input 
+                      className="px-2 py-1 border text-xs md:text-sm flex-1 md:flex-none"
+                      style={{ 
+                        width: '100%',
+                        maxWidth: '130px',
+                        borderColor: formErrors.date ? '#ef4444' : borderColor,
+                        backgroundColor: formErrors.date ? '#fef2f2' : 'transparent',
+                        fontFamily: 'Georgia, "Times New Roman", Times, serif'
+                      }}
+                      type="date" 
+                      value={date} 
+                      onChange={(e) => { setDate(e.target.value); setFormErrors(p => ({...p, date: ''})); }} 
+                    />
+                  </div>
+                  {formErrors.date && <p className="text-red-500 text-xs">{formErrors.date}</p>}
                 </div>
               </div>
             </div>
@@ -465,18 +508,19 @@ const InvoiceGenerator = () => {
           <div className="text-xs md:text-sm font-bold mb-2 md:mb-3 uppercase tracking-wide" style={{ color: primaryColor }}>
             Bill To:
           </div>
-          <div className="p-3 md:p-4 lg:p-5 border" style={{ backgroundColor: '#fafafa', borderColor: primaryColor }}>
+          <div data-error="customerName" className="p-3 md:p-4 lg:p-5 border" style={{ backgroundColor: '#fafafa', borderColor: formErrors.customerName ? '#ef4444' : primaryColor }}>
             <input 
-              placeholder="Customer Name"
-              className="w-full text-base md:text-lg font-semibold mb-2 bg-transparent border-none outline-none"
+              placeholder="Customer Name *"
+              className="w-full text-base md:text-lg font-semibold mb-1 bg-transparent border-none outline-none"
               style={{ 
                 color: secondaryColor,
                 fontFamily: 'Georgia, "Times New Roman", Times, serif'
               }}
               type="text" 
               value={customerName} 
-              onChange={(e) => setCustomerName(e.target.value)} 
+              onChange={(e) => { setCustomerName(e.target.value); setFormErrors(p => ({...p, customerName: ''})); }} 
             />
+            {formErrors.customerName && <p className="text-red-500 text-xs mb-1">{formErrors.customerName}</p>}
             <input 
               placeholder="Address"
               className="w-full text-xs md:text-sm mb-1.5 bg-transparent border-none outline-none"
@@ -641,6 +685,11 @@ const InvoiceGenerator = () => {
               ))}
             </tbody>
           </table>
+          {formErrors.items && (
+            <div data-error="items" className="mt-2 px-3 py-2 bg-red-50 border border-red-300 rounded text-red-600 text-xs flex items-center gap-2">
+              <span>⚠</span> {formErrors.items}
+            </div>
+          )}
           <button 
             onClick={addItem}
             className="mt-3 px-5 py-2 text-xs font-semibold border transition-colors tracking-wide"
@@ -809,6 +858,11 @@ const InvoiceGenerator = () => {
             ))}
           </div>
           
+          {formErrors.items && (
+            <div data-error="items" className="mt-2 px-3 py-2 bg-red-50 border border-red-300 rounded text-red-600 text-xs flex items-center gap-2">
+              <span>⚠</span> {formErrors.items}
+            </div>
+          )}
           <button 
             onClick={addItem}
             className="mt-3 w-full px-4 py-2.5 text-xs font-semibold border transition-colors tracking-wide rounded"
